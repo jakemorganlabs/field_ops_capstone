@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "proposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "bom_id", "summary"],
+  "properties": {
+    "run_id": { "type": "string", "format": "uuid" },
+    "bom_id": { "type": "string", "format": "uuid" },
+    "summary": { "type": "string" },
+    "line_items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/line_item" }
+    },
+    "labor_total": { "type": "string" },
+    "material_subtotal": { "type": "string" },
+    "tax_rate": { "type": "string" },
+    "tax_amount": { "type": "string" },
+    "total": { "type": "string" },
+    "terms": { "type": "string" },
+    "valid_until": { "type": "string", "format": "date" }
+  },
+  "$defs": {
+    "line_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "amount"],
+      "properties": {
+        "description": { "type": "string" },
+        "amount": { "type": "string" },
+        "quantity": { "type": "string" },
+        "unit_price": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intake_hash", "status"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "intake_hash": { "type": "string" },
+    "status": { "type": "string", "enum": ["pending", "running", "completed", "failed", "rejected"] },
+    "spec_id": { "type": "string", "format": "uuid" },
+    "proposal": { "type": "object" },
+    "bom": { "type": "object" },
+    "critique": { "type": "object" },
+    "total_cost": { "type": "string" },
+    "error": { "type": "string" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

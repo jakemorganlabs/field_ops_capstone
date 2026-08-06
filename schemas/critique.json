@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "critique",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "verdict"],
+  "properties": {
+    "run_id": { "type": "string", "format": "uuid" },
+    "round": { "type": "integer", "minimum": 0 },
+    "verdict": { "type": "string", "enum": ["pass", "fail", "needs_revision"] },
+    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "issues": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/issue" }
+    },
+    "corrected_bom": { "type": "object" },
+    "corrected_proposal": { "type": "object" },
+    "comment": { "type": "string" }
+  },
+  "$defs": {
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "message"],
+      "properties": {
+        "field": { "type": "string" },
+        "message": { "type": "string" },
+        "severity": { "type": "string", "enum": ["error", "warning", "info"] }
+      }
+    }
+  }
+}

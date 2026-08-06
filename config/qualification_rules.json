@@ -1,0 +1,12 @@
+{
+  "required_fields": ["project_name", "scope", "location"],
+  "min_materials": 1,
+  "min_labor": 1,
+  "reject_threshold": 40,
+  "clarify_threshold": 80,
+  "field_weights": {
+    "project_name": 2,
+    "scope": 2,
+    "location": 1
+  }
+}

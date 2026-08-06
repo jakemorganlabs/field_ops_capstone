@@ -1,0 +1,5 @@
+{
+  "target_tokens": 500,
+  "overlap_tokens": 50,
+  "words_per_token_estimate": 0.75
+}

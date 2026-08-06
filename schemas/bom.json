@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bom",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "lines"],
+  "properties": {
+    "run_id": { "type": "string", "format": "uuid" },
+    "lines": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/line" }
+    },
+    "labor": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/labor" }
+    }
+  },
+  "$defs": {
+    "line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item", "quantity", "unit_cost"],
+      "properties": {
+        "item": { "type": "string" },
+        "quantity": { "type": "string" },
+        "unit_cost": { "type": "string" },
+        "unit": { "type": "string" },
+        "citation": { "$ref": "#/$defs/citation" },
+        "assumption": { "type": "boolean" },
+        "note": { "type": "string" }
+      },
+      "oneOf": [
+        { "required": ["item", "quantity", "unit_cost", "citation"] },
+        { "properties": { "assumption": { "const": true } }, "required": ["item", "quantity", "unit_cost", "assumption"] }
+      ]
+    },
+    "labor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "hours", "rate_key"],
+      "properties": {
+        "role": { "type": "string" },
+        "hours": { "type": "string" },
+        "rate_key": { "type": "string" },
+        "citation": { "$ref": "#/$defs/citation" },
+        "assumption": { "type": "boolean" }
+      },
+      "oneOf": [
+        { "required": ["citation"] },
+        { "properties": { "assumption": { "const": true } }, "required": ["assumption"] }
+      ]
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chunk_id", "snippet"],
+      "properties": {
+        "chunk_id": { "type": "string", "format": "uuid" },
+        "snippet": { "type": "string" }
+      }
+    }
+  }
+}

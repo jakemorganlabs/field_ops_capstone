@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "project_spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["project_name", "scope"],
+  "properties": {
+    "project_name": { "type": "string" },
+    "client_name": { "type": "string" },
+    "location": { "type": "string" },
+    "region": { "type": "string" },
+    "start_date": { "type": "string", "format": "date" },
+    "end_date": { "type": "string", "format": "date" },
+    "scope": { "type": "string" },
+    "materials": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "labor": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" },
+    "raw_text": { "type": "string" }
+  }
+}

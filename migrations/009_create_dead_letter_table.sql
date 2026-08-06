@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS dead_letter (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  run_id UUID REFERENCES run(id) ON DELETE SET NULL,
+  payload JSONB NOT NULL,
+  error TEXT,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT,
+  resolved BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

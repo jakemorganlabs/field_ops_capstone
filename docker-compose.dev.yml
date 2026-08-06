@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg18
+    environment:
+      POSTGRES_USER: fieldops
+      POSTGRES_PASSWORD: fieldops
+      POSTGRES_DB: fieldops
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - fieldops_pgdata:/var/lib/postgresql
+
+volumes:
+  fieldops_pgdata:
