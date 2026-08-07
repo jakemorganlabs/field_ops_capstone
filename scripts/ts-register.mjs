@@ -1,6 +1,7 @@
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { statSync } from "node:fs";
 import { dirname, extname } from "node:path";
+import { register } from "node:module";
 
 /**
  * Node ESM resolve hook that maps ".js" import specifiers to ".ts" files
@@ -27,3 +28,5 @@ export async function resolve(specifier, context, nextResolve) {
 
   return nextResolve(specifier, context);
 }
+
+register(import.meta.url, import.meta.url);
