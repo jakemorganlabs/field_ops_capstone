@@ -1,7 +1,7 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
-const ajv = new Ajv2020({ strict: false });
+export const ajv = new Ajv2020({ strict: false });
 addFormats(ajv);
 
 export interface JsonCallResult<T> {

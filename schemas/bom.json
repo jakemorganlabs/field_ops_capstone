@@ -43,7 +43,8 @@
         "hours": { "type": "string" },
         "rate_key": { "type": "string" },
         "citation": { "$ref": "#/$defs/citation" },
-        "assumption": { "type": "boolean" }
+        "assumption": { "type": "boolean" },
+        "note": { "type": "string" }
       },
       "oneOf": [
         { "required": ["citation"] },

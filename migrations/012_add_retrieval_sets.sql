@@ -1,0 +1,1 @@
+ALTER TABLE run ADD COLUMN IF NOT EXISTS retrieval_sets JSONB;
