@@ -7,6 +7,8 @@
     "migrate": "node --experimental-strip-types --import ./scripts/ts-register.mjs scripts/migrate.ts",
     "ingest": "node --experimental-strip-types --import ./scripts/ts-register.mjs scripts/ingest.ts",
     "smoke": "bash scripts/ingest_smoke.sh",
+    "intake-smoke": "bash scripts/intake_smoke.sh",
+    "server": "node --experimental-strip-types --import ./scripts/ts-register.mjs src/server.ts",
     "test": "vitest run"
   },
   "keywords": [],

@@ -3,7 +3,7 @@
   "$id": "project_spec",
   "type": "object",
   "additionalProperties": false,
-  "required": ["project_name", "scope"],
+  "required": ["project_name", "scope", "confidence"],
   "properties": {
     "project_name": { "type": "string" },
     "client_name": { "type": "string" },
@@ -25,6 +25,7 @@
       "items": { "type": "string" }
     },
     "notes": { "type": "string" },
-    "raw_text": { "type": "string" }
+    "raw_text": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
   }
 }

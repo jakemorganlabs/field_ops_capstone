@@ -25,7 +25,7 @@ describe("schemas", () => {
   it("project_spec accepts a valid example and rejects an extra property", () => {
     const validate = ajv.compile(loadSchema("project_spec.json"));
     expect(validate({ project_name: "Tower A", scope: "Fiber install", extra: true })).toBe(false);
-    expect(validate({ project_name: "Tower A", scope: "Fiber install" })).toBe(true);
+    expect(validate({ project_name: "Tower A", scope: "Fiber install", confidence: 0.9 })).toBe(true);
   });
 
   it("bom accepts a valid example and rejects an extra property", () => {
