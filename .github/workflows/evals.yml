@@ -23,7 +23,7 @@ jobs:
       DATABASE_URL: postgresql://fieldops:fieldops@127.0.0.1:5432/fieldops_eval
       DEEPINFRA_API_KEY: ${{ secrets.DEEPINFRA_API_KEY }}
       JUDGE_MODEL_ID: ${{ secrets.JUDGE_MODEL_ID }}
-      GENERATION_MODEL_ID: google/gemma-4-26B-A4B-it
+      GENERATION_MODEL_ID: deepseek-ai/DeepSeek-V4-Flash
       EMBEDDING_BASE_URL: https://api.deepinfra.com/v1/openai/embeddings
       EMBEDDING_MODEL_ID: Qwen/Qwen3-Embedding-4B
       EMBEDDING_DIMENSIONS: "1536"
