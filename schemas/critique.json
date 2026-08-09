@@ -18,7 +18,7 @@
     "issue": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type", "severity", "target_agent", "description", "evidence_chunk_id"],
+      "required": ["type", "severity", "target_agent", "description"],
       "properties": {
         "type": { "type": "string", "enum": ["missing_item", "pricing_anomaly", "regulatory_gap", "scope_mismatch"] },
         "severity": { "type": "string", "enum": ["error", "warning", "info"] },

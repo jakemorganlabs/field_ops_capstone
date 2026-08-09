@@ -66,7 +66,7 @@ function buildResponseSchema(critiqueSchema: { $ref: string }): object {
         items: {
           type: "object",
           additionalProperties: true,
-          required: ["type", "severity", "target_agent", "description", "evidence_chunk_id"],
+          required: ["type", "severity", "target_agent", "description"],
           properties: {
             type: { type: "string", enum: ["missing_item", "pricing_anomaly", "regulatory_gap", "scope_mismatch"] },
             severity: { type: "string", enum: ["error", "warning", "info"] },
@@ -97,7 +97,7 @@ Issue rules:
 - "type" is one of: missing_item, pricing_anomaly, regulatory_gap, scope_mismatch.
 - "severity" is one of: error, warning, info.
 - "target_agent" is one of: estimator, writer.
-- "evidence_chunk_id" is the id of the evidence chunk that supports the finding, copied exactly from the chunk list.
+- "evidence_chunk_id" is the id of the evidence chunk that supports the finding, copied exactly from the chunk list. Omit the field entirely when no chunk supports the finding. Never send an empty string.
 - A pass decision means the draft is acceptable. It is advice only. Other gates still apply.
 - A revise decision means one or more real defects must be fixed before the run can complete.
 
