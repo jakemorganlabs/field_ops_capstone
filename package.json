@@ -24,11 +24,13 @@
     "decimal.js": "^10.6.0",
     "dotenv": "^17.4.2",
     "pdf-parse": "^2.4.5",
+    "pdfkit": "^0.19.1",
     "pg": "^8.22.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
     "@types/pdf-parse": "^1.1.5",
+    "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.20.4",
     "vitest": "^4.1.10"
   }

@@ -6,12 +6,23 @@ import { createPool } from "./db.js";
 import { intakeIdempotencyKey } from "./idempotency.js";
 import { verifyRequest } from "./hmac.js";
 import { runPipeline } from "./pipeline.js";
+import {
+  handleGetQueue,
+  handleGetQueueRun,
+  handleApprove,
+  handleReject,
+  handleGetPdf,
+  getStatus,
+} from "./gate.js";
+import { fsObjectStore } from "./objectstore.js";
 
 config();
 
 const pool = createPool();
 const port = Number(process.env.PORT ?? 3004);
 const hmacSecret = process.env.HMAC_SECRET;
+const objectStoreDir = process.env.OBJECT_STORE_DIR ?? "./objects";
+const gateDeps = { pool, store: fsObjectStore(objectStoreDir) };
 
 if (!hmacSecret) {
   console.error("HMAC_SECRET is not set");
@@ -159,8 +170,31 @@ async function handleIntake(req: IncomingMessage, res: ServerResponse): Promise<
   jsonResponse(res, 202, { run_id: runId, status: "accepted" });
 }
 
+function isReviewHost(req: IncomingMessage): boolean {
+  const reviewHost = process.env.REVIEW_HOST ?? "";
+  if (!reviewHost) return false;
+  return (req.headers.host ?? "").toLowerCase() === reviewHost.toLowerCase();
+}
+
 const server = createServer(async (req, res) => {
   try {
+    if (isReviewHost(req)) {
+      if (req.method === "GET" && req.url === "/queue") {
+        await handleGetQueue(req, res, gateDeps);
+      } else if (req.method === "GET" && req.url?.startsWith("/queue/") && req.url?.endsWith("/pdf")) {
+        await handleGetPdf(req, res, gateDeps);
+      } else if (req.method === "GET" && req.url?.match(/^\/queue\/[0-9a-f-]+$/)) {
+        await handleGetQueueRun(req, res, gateDeps);
+      } else if (req.method === "POST" && req.url?.match(/^\/queue\/[0-9a-f-]+\/approve$/)) {
+        await handleApprove(req, res, gateDeps);
+      } else if (req.method === "POST" && req.url?.match(/^\/queue\/[0-9a-f-]+\/reject$/)) {
+        await handleReject(req, res, gateDeps);
+      } else {
+        jsonResponse(res, 404, { error: "not found" });
+      }
+      return;
+    }
+
     if (req.method === "GET" && req.url === "/health") {
       await handleHealth(res);
     } else if (req.method === "GET" && req.url?.startsWith("/run/")) {
@@ -171,8 +205,9 @@ const server = createServer(async (req, res) => {
       jsonResponse(res, 404, { error: "not found" });
     }
   } catch (err) {
+    const status = getStatus(err);
     const error = err instanceof Error ? err.message : String(err);
-    jsonResponse(res, 500, { error });
+    jsonResponse(res, status >= 400 && status < 600 ? status : 500, { error });
   }
 });
 
