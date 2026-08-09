@@ -27,7 +27,7 @@ jobs:
       EMBEDDING_BASE_URL: https://api.deepinfra.com/v1/openai/embeddings
       EMBEDDING_MODEL_ID: Qwen/Qwen3-Embedding-4B
       EMBEDDING_DIMENSIONS: "1536"
-      EVAL_CONCURRENCY: "2"
+      EVAL_CONCURRENCY: "1"
       EVAL_CASE_LIMIT: "2"
       SKIP_DRIFT_VALIDATION: "1"
     steps:
