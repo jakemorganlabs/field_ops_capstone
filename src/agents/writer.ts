@@ -74,6 +74,7 @@ function buildProseSchema(): object {
   return {
     type: "object",
     additionalProperties: false,
+    required: ["summary"],
     properties: {
       summary: { type: "string" },
       terms: { type: "string" },
@@ -170,7 +171,8 @@ function buildSystemPrompt(): string {
 
 Required response format:
 - Return a JSON object with wrapper key "prose".
-- The value may contain these optional fields: summary, terms, valid_until, code_claims.
+- The value must always be present and must contain a non-empty "summary" string.
+- The value may also contain these optional fields: terms, valid_until, code_claims.
 - valid_until must be a string in YYYY-MM-DD format if present.
 - code_claims, if present, must be an array of objects with claim, chunk_id, and snippet.
 
