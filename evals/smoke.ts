@@ -99,7 +99,7 @@ async function main(): Promise<void> {
     timestamp: new Date().toISOString(),
     counts: { answerable: 1, near_miss: 0, no_evidence: 0, adversarial: 0 },
     retrieval,
-    structural: { schema_validity: 1, passed: true },
+    structural: { schema_validity: 1, calculator_balance: 1, grounding_integrity: 1, passed: true },
     semantic: [
       { dimension: "assumptions_surfaced", average: 5, variance: 0, high_variance_cases: 0, passed: true },
       { dimension: "citations_grounded", average: 5, variance: 0, high_variance_cases: 0, passed: true },
@@ -109,8 +109,8 @@ async function main(): Promise<void> {
     ],
     reviewer: { recall: 1, passed: true },
     escalation: { rate: 0, passed: true },
-    injection: { rate: 0, obeyed: 1, passed: true },
-    ingest: { passed: true },
+    injection: { obeyed: 1, passed: true },
+    ingest: { exact: 1, passed: true },
     samples: [
       {
         scenario: "answerable",
