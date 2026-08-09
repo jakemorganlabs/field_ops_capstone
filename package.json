@@ -10,6 +10,7 @@
     "intake-smoke": "bash scripts/intake_smoke.sh",
     "estimator-smoke": "bash scripts/estimator_smoke.sh",
     "writer-smoke": "bash scripts/writer_smoke.sh",
+    "reviewer-smoke": "bash scripts/reviewer_smoke.sh",
     "server": "node --experimental-strip-types --import ./scripts/ts-register.mjs src/server.ts",
     "test": "vitest run"
   },

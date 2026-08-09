@@ -205,19 +205,34 @@ function buildUserPrompt(
   return parts.join("\n");
 }
 
-function buildRepairPrompt(findings: DriftFinding[], missing: MissingAssumption[]): string {
-  const lines: string[] = ["The previous proposal failed validation. Repair it."];
-  if (findings.length > 0) {
+interface WriterRepairContext {
+  findings?: DriftFinding[];
+  missing?: MissingAssumption[];
+  issues?: string[];
+}
+
+function buildRepairPrompt(context: WriterRepairContext): string {
+  const lines: string[] = [];
+  if (context.findings && context.findings.length > 0) {
     lines.push("Numerical drift findings (expected vs found):");
-    for (const f of findings) {
+    for (const f of context.findings) {
       lines.push(`- field ${f.field}: expected ${f.expected}, found ${f.found}`);
     }
   }
-  if (missing.length > 0) {
+  if (context.missing && context.missing.length > 0) {
     lines.push("Missing assumptions:");
-    for (const m of missing) {
+    for (const m of context.missing) {
       lines.push(`- ${m.source}: ${m.text}`);
     }
+  }
+  if (context.issues && context.issues.length > 0) {
+    lines.push("Reviewer findings to address in this regeneration:");
+    for (const issue of context.issues) {
+      lines.push(`- ${issue}`);
+    }
+  }
+  if (lines.length === 0) {
+    lines.push("Repair the proposal.");
   }
   lines.push("Return the corrected prose object with wrapper key \"prose\".");
   return lines.join("\n");
@@ -305,12 +320,12 @@ async function callWriter(
   totals: ComputedTotals,
   templates: IntentResult,
   taxRate: string,
-  repairContext?: { findings: DriftFinding[]; missing: MissingAssumption[] }
+  repairContext?: WriterRepairContext
 ): Promise<JsonCallResult<ProseOutput>> {
   const system = buildSystemPrompt();
   let user = buildUserPrompt(spec, bom, totals, templates, taxRate);
   if (repairContext) {
-    user += "\n\n" + buildRepairPrompt(repairContext.findings, repairContext.missing);
+    user += "\n\n" + buildRepairPrompt(repairContext);
   }
   return gemmaJson<ProseOutput>({
     system,
@@ -325,7 +340,8 @@ export async function runWriter(
   bom: BillOfMaterials,
   totals: ComputedTotals,
   templates: IntentResult,
-  deps: Deps
+  deps: Deps,
+  repairContext?: WriterRepairContext
 ): Promise<ProposalDocument> {
   await loadProposalSchema();
 
@@ -343,7 +359,7 @@ export async function runWriter(
     client.release();
   }
 
-  let response = await callWriter(spec, bom, totals, templates, deps.taxRate);
+  let response = await callWriter(spec, bom, totals, templates, deps.taxRate, repairContext);
   let proposal = buildProposal(deps.runId, bom, totals, deps.taxRate, response.value);
 
   let findings = findNumericalDrift(proposal, bom, totals, spec);
@@ -356,7 +372,7 @@ export async function runWriter(
       totals,
       templates,
       deps.taxRate,
-      { findings, missing }
+      { ...repairContext, findings, missing }
     );
     response = repairResponse;
     proposal = buildProposal(deps.runId, bom, totals, deps.taxRate, repairResponse.value);

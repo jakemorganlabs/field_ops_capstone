@@ -148,7 +148,17 @@ Example assumption line when no price is found:
   return prompt;
 }
 
-function buildUserPrompt(spec: ProjectSpec, evidence: Record<Intent, IntentResult>, deps: Deps, forceFinal: boolean): string {
+interface EstimatorRepairContext {
+  issues: string[];
+}
+
+function buildUserPrompt(
+  spec: ProjectSpec,
+  evidence: Record<Intent, IntentResult>,
+  deps: Deps,
+  forceFinal: boolean,
+  repairContext?: EstimatorRepairContext
+): string {
   const parts: string[] = [];
   parts.push(`Project spec: ${JSON.stringify(spec, null, 2)}`);
   parts.push(`Available labor rate keys: ${Object.keys(deps.rateMap).join(", ")}. If a labor role does not match one of these keys, mark the labor line as an assumption.`);
@@ -158,6 +168,13 @@ function buildUserPrompt(spec: ProjectSpec, evidence: Record<Intent, IntentResul
     parts.push(`\nIntent: ${intent} (query: ${result.query}, no_evidence: ${result.no_evidence})`);
     for (const chunk of result.chunks) {
       parts.push(`chunk ${chunk.chunk_id} (score ${chunk.score.toFixed(4)}): ${chunk.text}`);
+    }
+  }
+
+  if (repairContext && repairContext.issues.length > 0) {
+    parts.push("\nReviewer findings to address in this regeneration:");
+    for (const issue of repairContext.issues) {
+      parts.push(`- ${issue}`);
     }
   }
 
@@ -173,11 +190,12 @@ async function callEstimator(
   evidence: Record<Intent, IntentResult>,
   forceFinal: boolean,
   bomSchema: object,
-  deps: Deps
+  deps: Deps,
+  repairContext?: EstimatorRepairContext
 ): Promise<JsonCallResult<EstimatorResponse>> {
   return gemmaJson<EstimatorResponse>({
     system: buildSystemPrompt(bomSchema, forceFinal),
-    user: buildUserPrompt(spec, evidence, deps, forceFinal),
+    user: buildUserPrompt(spec, evidence, deps, forceFinal, repairContext),
     wrapperKey: "response",
     schema: buildResponseSchema(bomSchema),
     maxTokens: 4096,
@@ -293,7 +311,8 @@ function computeTotals(bom: BillOfMaterials, rateMap: Record<string, string>, ta
 export async function runEstimator(
   spec: ProjectSpec,
   evidence: Record<Intent, IntentResult>,
-  deps: Deps
+  deps: Deps,
+  repairContext?: EstimatorRepairContext
 ): Promise<EstimatorOutcome> {
   const bomSchema = await loadBomSchema();
   const allChunks = collectRetrievedChunks(evidence);
@@ -310,7 +329,7 @@ export async function runEstimator(
 
   while (true) {
     const forceFinal = rounds >= MAX_EVIDENCE_ROUNDS;
-    response = await callEstimator(spec, evidence, forceFinal, bomSchema, deps);
+    response = await callEstimator(spec, evidence, forceFinal, bomSchema, deps, repairContext);
 
     const value = response.value;
     if ("evidence_request" in value && !forceFinal) {

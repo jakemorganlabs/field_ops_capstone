@@ -80,14 +80,24 @@ describe("schemas", () => {
     expect(
       validate({
         run_id: "00000000-0000-0000-0000-000000000000",
-        verdict: "pass",
+        decision: "pass",
+        issues: [],
         extra: true,
       })
     ).toBe(false);
     expect(
       validate({
         run_id: "00000000-0000-0000-0000-000000000000",
-        verdict: "pass",
+        decision: "pass",
+        issues: [
+          {
+            type: "missing_item",
+            severity: "error",
+            target_agent: "estimator",
+            description: "missing patch cord",
+            evidence_chunk_id: "00000000-0000-0000-0000-000000000000",
+          },
+        ],
       })
     ).toBe(true);
   });

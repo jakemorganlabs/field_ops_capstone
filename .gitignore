@@ -1,4 +1,8 @@
 .env
 .env.*
+deploy/.env*
+*.dump
+nohup.out
+*.bak
 node_modules/
 objects/

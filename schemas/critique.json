@@ -3,29 +3,29 @@
   "$id": "critique",
   "type": "object",
   "additionalProperties": false,
-  "required": ["run_id", "verdict"],
+  "required": ["run_id", "decision", "issues"],
   "properties": {
     "run_id": { "type": "string", "format": "uuid" },
     "round": { "type": "integer", "minimum": 0 },
-    "verdict": { "type": "string", "enum": ["pass", "fail", "needs_revision"] },
-    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "decision": { "type": "string", "enum": ["pass", "revise"] },
     "issues": {
       "type": "array",
       "items": { "$ref": "#/$defs/issue" }
     },
-    "corrected_bom": { "type": "object" },
-    "corrected_proposal": { "type": "object" },
     "comment": { "type": "string" }
   },
   "$defs": {
     "issue": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["field", "message"],
+      "required": ["type", "severity", "target_agent", "description", "evidence_chunk_id"],
       "properties": {
-        "field": { "type": "string" },
-        "message": { "type": "string" },
-        "severity": { "type": "string", "enum": ["error", "warning", "info"] }
+        "type": { "type": "string", "enum": ["missing_item", "pricing_anomaly", "regulatory_gap", "scope_mismatch"] },
+        "severity": { "type": "string", "enum": ["error", "warning", "info"] },
+        "target_agent": { "type": "string", "enum": ["estimator", "writer"] },
+        "description": { "type": "string" },
+        "evidence_chunk_id": { "type": "string", "format": "uuid" },
+        "evidence_snippet": { "type": "string" }
       }
     }
   }

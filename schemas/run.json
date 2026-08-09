@@ -7,7 +7,7 @@
   "properties": {
     "id": { "type": "string", "format": "uuid" },
     "intake_hash": { "type": "string" },
-    "status": { "type": "string", "enum": ["pending", "running", "completed", "failed", "rejected"] },
+    "status": { "type": "string", "enum": ["pending", "running", "completed", "failed", "rejected", "needs_review"] },
     "spec_id": { "type": "string", "format": "uuid" },
     "proposal": { "type": "object" },
     "bom": { "type": "object" },

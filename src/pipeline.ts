@@ -173,6 +173,12 @@ async function writeSpecAndRun(ctx: PipelineContext, spec: ExtractedSpec, decisi
       [status, spec_id, JSON.stringify(proposal), ctx.run_id]
     );
 
+    await client.query(
+      `INSERT INTO audit (run_id, table_name, record_id, action, new_value)
+       VALUES ($1, 'run', $2, 'qualification', $3)`,
+      [ctx.run_id, ctx.run_id, JSON.stringify({ route: decision.action, score: decision.score, reasons: decision.reasons })]
+    );
+
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
