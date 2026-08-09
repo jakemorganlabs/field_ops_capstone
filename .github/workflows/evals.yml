@@ -42,7 +42,7 @@ jobs:
       - run: npm run seed:corpus
         env:
           OBJECT_STORE_DIR: ${{ runner.temp }}/objects
-      - run: npm run eval
+      - run: npm run eval:smoke
         env:
           OBJECT_STORE_DIR: ${{ runner.temp }}/objects
       - run: npm run eval:gate

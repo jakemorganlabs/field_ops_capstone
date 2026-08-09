@@ -16,6 +16,7 @@
     "eval": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/run.ts",
     "eval-report": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/report.ts",
     "eval:gate": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/gate.ts",
+    "eval:smoke": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/smoke.ts",
     "badge": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/badge.ts",
     "test": "vitest run"
   },
