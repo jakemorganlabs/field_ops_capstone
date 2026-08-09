@@ -180,21 +180,11 @@ async function handleIntake(req: IncomingMessage, res: ServerResponse): Promise<
     client.release();
   }
 
-  runPipeline(runId, intake, pool).catch(async (err) => {
+  runPipeline(runId, intake, pool).catch((err) => {
+    // failRun inside the pipeline already persisted the failure and the
+    // dead_letter row. Log only, to avoid a duplicate write.
     const error = err instanceof Error ? err.message : String(err);
-    const client2 = await pool.connect();
-    try {
-      await client2.query(
-        `UPDATE run SET status = 'failed', error = $1, updated_at = NOW() WHERE id = $2`,
-        [error, runId]
-      );
-      await client2.query(
-        `INSERT INTO dead_letter (run_id, payload, error, last_error) VALUES ($1, $2, $3, $3)`,
-        [runId, JSON.stringify({ intake }), error]
-      );
-    } finally {
-      client2.release();
-    }
+    console.error(JSON.stringify({ event: "pipeline_failed", run_id: runId, error }));
   });
 
   jsonResponse(res, 202, { run_id: runId, status: "accepted" });

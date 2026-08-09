@@ -243,7 +243,7 @@ async function persistEstimate(
   totals: ComputedTotals
 ): Promise<void> {
   await client.query(
-    "UPDATE run SET bom = $1, total_cost = $2, status = 'completed', updated_at = NOW() WHERE id = $3",
+    "UPDATE run SET bom = $1, total_cost = $2, updated_at = NOW() WHERE id = $3",
     [JSON.stringify(bom), totals.total, runId]
   );
 

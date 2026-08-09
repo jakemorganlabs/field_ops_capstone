@@ -91,6 +91,8 @@ Required response format:
 
 Issue rules:
 - Report only real defects. Do not report style issues.
+- Report at most 6 issues, the most important first. Do not report one issue per BOM line; group related lines into one issue.
+- Keep each description under 40 words.
 - Each issue is a JSON object with exactly these field names: "type", "severity", "target_agent", "description", "evidence_chunk_id", and optional "evidence_snippet".
 - "type" is one of: missing_item, pricing_anomaly, regulatory_gap, scope_mismatch.
 - "severity" is one of: error, warning, info.
@@ -128,7 +130,7 @@ export async function runReviewer(input: ReviewInput): Promise<Critique> {
     user: buildUserPrompt(input),
     wrapperKey: "critique",
     schema: buildResponseSchema(critiqueSchema),
-    maxTokens: 4096,
+    maxTokens: 8192,
     audit: { run_id: input.run_id, stage: "reviewer" },
   });
 
