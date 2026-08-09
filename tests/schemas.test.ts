@@ -60,6 +60,8 @@ describe("schemas", () => {
         bom_id: "00000000-0000-0000-0000-000000000000",
         summary: "Proposal",
         extra: true,
+        assumptions: [],
+        code_claims: [],
       })
     ).toBe(false);
     expect(
@@ -67,6 +69,8 @@ describe("schemas", () => {
         run_id: "00000000-0000-0000-0000-000000000000",
         bom_id: "00000000-0000-0000-0000-000000000000",
         summary: "Proposal",
+        assumptions: [],
+        code_claims: [],
       })
     ).toBe(true);
   });

@@ -3,7 +3,7 @@
   "$id": "proposal",
   "type": "object",
   "additionalProperties": false,
-  "required": ["run_id", "bom_id", "summary"],
+  "required": ["run_id", "bom_id", "summary", "assumptions", "code_claims"],
   "properties": {
     "run_id": { "type": "string", "format": "uuid" },
     "bom_id": { "type": "string", "format": "uuid" },
@@ -18,7 +18,15 @@
     "tax_amount": { "type": "string" },
     "total": { "type": "string" },
     "terms": { "type": "string" },
-    "valid_until": { "type": "string", "format": "date" }
+    "valid_until": { "type": "string", "format": "date" },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "code_claims": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/code_claim" }
+    }
   },
   "$defs": {
     "line_item": {
@@ -30,6 +38,16 @@
         "amount": { "type": "string" },
         "quantity": { "type": "string" },
         "unit_price": { "type": "string" }
+      }
+    },
+    "code_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim", "chunk_id", "snippet"],
+      "properties": {
+        "claim": { "type": "string" },
+        "chunk_id": { "type": "string", "format": "uuid" },
+        "snippet": { "type": "string" }
       }
     }
   }
