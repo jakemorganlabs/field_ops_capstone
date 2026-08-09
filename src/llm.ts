@@ -88,7 +88,7 @@ export async function judgeJson<T>(opts: {
         response_format: { type: "json_object" },
         max_tokens: opts.maxTokens,
       }),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(120000),
     });
     const latency_ms = Date.now() - started;
 
@@ -240,7 +240,7 @@ export async function gemmaJson<T>(opts: {
         response_format: { type: "json_object" },
         max_tokens: opts.maxTokens,
       }),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(120000),
     });
     const latency_ms = Date.now() - started;
 
