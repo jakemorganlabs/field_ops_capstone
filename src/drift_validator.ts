@@ -9,6 +9,7 @@ export interface DriftFinding {
 }
 
 const NUMBER_RE = /\$\s*\d[\d,]*(?:\.\d+)?|\d[\d,]*(?:\.\d+)?/g;
+const DATE_RE = /\b\d{4}(?:[-/]\d{1,2}(?:[-/]\d{1,2})?)?\b|\b\d{1,2}[-/]\d{1,2}(?:[-/]\d{4})?\b/g;
 
 function normalizeNumberToken(token: string): Decimal {
   const cleaned = token.replace(/\$/g, "").replace(/,/g, "").replace(/\s+/g, "");
@@ -91,6 +92,8 @@ function extractNumbers(text: string): Array<{ token: string; value: Decimal }> 
   const matches = text.match(NUMBER_RE) ?? [];
   const result: Array<{ token: string; value: Decimal }> = [];
   for (const token of matches) {
+    // Skip standalone date tokens (e.g., "2025", "12/31") from drift scanning.
+    if (token.match(DATE_RE)) continue;
     try {
       result.push({ token, value: normalizeNumberToken(token) });
     } catch {
