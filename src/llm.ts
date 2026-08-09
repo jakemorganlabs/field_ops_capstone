@@ -62,13 +62,13 @@ export async function judgeJson<T>(opts: {
   const rawOutputs: string[] = [];
   let repaired = false;
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    if (attempt === 1) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (attempt >= 1) {
       repaired = true;
       const fields = requiredFields(opts.schema);
       const repairPrompt = `The previous response failed validation. Errors: ${JSON.stringify(
         validate.errors ?? []
-      )}. Restate the wrapper key "${opts.wrapperKey}". List every required field: ${fields.join(
+      )}. Return one JSON object with the single top-level key "${opts.wrapperKey}". Never return an empty object. The value of "${opts.wrapperKey}" must be an object that contains every required field: ${fields.join(
         ", "
       )}. Use "" and 0, not null.`;
       messages.push({ role: "user", content: repairPrompt });
@@ -214,13 +214,13 @@ export async function generateJson<T>(opts: {
   const rawOutputs: string[] = [];
   let repaired = false;
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    if (attempt === 1) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (attempt >= 1) {
       repaired = true;
       const fields = requiredFields(opts.schema);
       const repairPrompt = `The previous response failed validation. Errors: ${JSON.stringify(
         validate.errors ?? []
-      )}. Restate the wrapper key "${opts.wrapperKey}". List every required field: ${fields.join(
+      )}. Return one JSON object with the single top-level key "${opts.wrapperKey}". Never return an empty object. The value of "${opts.wrapperKey}" must be an object that contains every required field: ${fields.join(
         ", "
       )}. Use "" and 0, not null.`;
       messages.push({ role: "user", content: repairPrompt });

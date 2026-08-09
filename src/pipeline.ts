@@ -46,7 +46,8 @@ export async function runPipeline(run_id: string, intake: unknown, pool: Pool): 
     await completeProposal(ctx);
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
-    await failRun(ctx, error);
+    const rawOutputs = err instanceof SchemaFailure ? err.rawOutputs : undefined;
+    await failRun(ctx, error, rawOutputs);
     throw err;
   }
 }
@@ -258,7 +259,7 @@ async function writeSpecAndRun(ctx: PipelineContext, spec: ExtractedSpec, decisi
   }
 }
 
-async function failRun(ctx: PipelineContext, error: string): Promise<void> {
+async function failRun(ctx: PipelineContext, error: string, rawOutputs?: string[]): Promise<void> {
   const client = await ctx.pool.connect();
   try {
     await client.query(
@@ -267,7 +268,7 @@ async function failRun(ctx: PipelineContext, error: string): Promise<void> {
     );
     await client.query(
       `INSERT INTO dead_letter (run_id, payload, error, last_error) VALUES ($1, $2, $3, $3)`,
-      [ctx.run_id, JSON.stringify({ intake: ctx.intake }), error]
+      [ctx.run_id, JSON.stringify({ intake: ctx.intake, raw_model_outputs: rawOutputs }), error]
     );
   } finally {
     client.release();
