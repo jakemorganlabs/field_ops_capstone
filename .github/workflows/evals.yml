@@ -23,6 +23,9 @@ jobs:
       DEEPINFRA_API_KEY: ${{ secrets.DEEPINFRA_API_KEY }}
       JUDGE_MODEL_ID: ${{ secrets.JUDGE_MODEL_ID }}
       GENERATION_MODEL_ID: google/gemma-4-26B-A4B-it
+      EMBEDDING_BASE_URL: https://api.deepinfra.com/v1/openai/embeddings
+      EMBEDDING_MODEL_ID: Qwen/Qwen3-Embedding-4B
+      EMBEDDING_DIMENSIONS: "1536"
     steps:
       # runner.temp is only available in step env, not job env.
       - uses: actions/checkout@v4
