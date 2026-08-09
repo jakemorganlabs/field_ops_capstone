@@ -22,6 +22,7 @@ jobs:
       DATABASE_URL: postgresql://fieldops:fieldops@127.0.0.1:5432/fieldops_eval
       DEEPINFRA_API_KEY: ${{ secrets.DEEPINFRA_API_KEY }}
       JUDGE_MODEL_ID: ${{ secrets.JUDGE_MODEL_ID }}
+      GENERATION_MODEL_ID: google/gemma-4-26B-A4B-it
     steps:
       # runner.temp is only available in step env, not job env.
       - uses: actions/checkout@v4
