@@ -1,0 +1,12 @@
+{
+  "date": "2026-08-08",
+  "models": {
+    "google/gemma-4-26B-A4B-it": {
+      "input_per_1m": 0.2,
+      "output_per_1m": 0.4
+    },
+    "Qwen/Qwen3-Embedding-4B": {
+      "input_per_1m": 0.02
+    }
+  }
+}

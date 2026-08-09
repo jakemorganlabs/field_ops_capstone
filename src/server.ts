@@ -1,4 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { config } from "dotenv";
 import pg from "pg";
@@ -74,15 +75,44 @@ async function writeAudit(client: pg.PoolClient, runId: string, hash: string): P
 
 async function handleHealth(res: ServerResponse): Promise<void> {
   const client = await pool.connect();
+  let db = "ok";
+  let lastRunAge: number | null = null;
   try {
     await client.query("SELECT 1");
-    jsonResponse(res, 200, { status: "ok" });
+    const result = await client.query(
+      "SELECT EXTRACT(EPOCH FROM (NOW() - created_at))::integer AS age FROM run ORDER BY created_at DESC LIMIT 1"
+    );
+    if (result.rowCount && result.rowCount > 0) {
+      lastRunAge = result.rows[0].age;
+    }
   } catch (err) {
-    const error = err instanceof Error ? err.message : String(err);
-    jsonResponse(res, 503, { status: "unavailable", error });
+    db = err instanceof Error ? err.message : String(err);
   } finally {
     client.release();
   }
+
+  let objectstore = "ok";
+  try {
+    await fsObjectStore(objectStoreDir).exists("health-check.tmp");
+  } catch (err) {
+    objectstore = err instanceof Error ? err.message : String(err);
+  }
+
+  let configStatus = "ok";
+  try {
+    await readFile("config/extraction.json", "utf-8");
+    await readFile("config/qualification_rules.json", "utf-8");
+  } catch (err) {
+    configStatus = err instanceof Error ? err.message : String(err);
+  }
+
+  const status = db === "ok" && objectstore === "ok" && configStatus === "ok" ? 200 : 503;
+  jsonResponse(res, status, {
+    db,
+    objectstore,
+    config: configStatus,
+    last_run_age_sec: lastRunAge,
+  });
 }
 
 async function handleGetRun(req: IncomingMessage, res: ServerResponse): Promise<void> {

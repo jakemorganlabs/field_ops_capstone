@@ -52,6 +52,7 @@ async function runExtraction(ctx: PipelineContext): Promise<void> {
     wrapperKey: "spec",
     schema,
     maxTokens: 2048,
+    audit: { run_id: ctx.run_id, stage: "extraction" },
   });
   const latency_ms = Date.now() - started;
 

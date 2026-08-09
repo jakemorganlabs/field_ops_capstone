@@ -199,6 +199,7 @@ async function callEstimator(
     wrapperKey: "response",
     schema: buildResponseSchema(bomSchema),
     maxTokens: 4096,
+    audit: { run_id: deps.runId, stage: "estimator" },
   });
 }
 

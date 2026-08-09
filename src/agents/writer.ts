@@ -333,6 +333,7 @@ async function callWriter(
     wrapperKey: "prose",
     schema: buildProseSchema(),
     maxTokens: 4096,
+    audit: { run_id: deps.runId, stage: "writer" },
   });
 }
 

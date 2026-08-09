@@ -100,6 +100,7 @@ export async function runReviewer(input: ReviewInput): Promise<Critique> {
     wrapperKey: "critique",
     schema: buildResponseSchema(critiqueSchema),
     maxTokens: 4096,
+    audit: { run_id: input.run_id, stage: "reviewer" },
   });
 
   const critique = response.value;
