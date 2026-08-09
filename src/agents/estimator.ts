@@ -162,6 +162,7 @@ function buildUserPrompt(
   const parts: string[] = [];
   parts.push(`Project spec: ${JSON.stringify(spec, null, 2)}`);
   parts.push(`Available labor rate keys: ${Object.keys(deps.rateMap).join(", ")}. If a labor role does not match one of these keys, mark the labor line as an assumption.`);
+  parts.push(`Use run_id "${deps.runId}" exactly as the bom run_id.`);
 
   for (const intent of ["similar_projects", "manufacturer_specs", "code_references"] as Intent[]) {
     const result = evidence[intent];
