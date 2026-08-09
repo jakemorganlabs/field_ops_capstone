@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Pool, PoolClient } from "pg";
 import { Decimal } from "decimal.js";
-import { ajv, gemmaJson, type JsonCallResult } from "../llm.js";
+import { ajv, generateJson, type JsonCallResult } from "../llm.js";
 import { materialSubtotal, laborTotal, proposalTotal } from "../calculator.js";
 import { verifyBomCitations, verifyLaborCitations, type LineVerdict } from "../citation_verifier.js";
 import { logStage } from "../log.js";
@@ -193,7 +193,7 @@ async function callEstimator(
   deps: Deps,
   repairContext?: EstimatorRepairContext
 ): Promise<JsonCallResult<EstimatorResponse>> {
-  return gemmaJson<EstimatorResponse>({
+  return generateJson<EstimatorResponse>({
     system: buildSystemPrompt(bomSchema, forceFinal),
     user: buildUserPrompt(spec, evidence, deps, forceFinal, repairContext),
     wrapperKey: "response",

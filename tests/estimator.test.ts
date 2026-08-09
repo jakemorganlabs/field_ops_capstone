@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { runEstimator, type Deps, type BillOfMaterials } from "../src/agents/estimator.js";
-import { gemmaJson } from "../src/llm.js";
+import { generateJson } from "../src/llm.js";
 import { retrieveIntent } from "../src/retrieval.js";
 import type { Intent, IntentResult } from "../src/retrieval.js";
 import type { ProjectSpec } from "../src/qualification.js";
@@ -9,7 +9,7 @@ vi.mock("../src/llm.js", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../src/llm.js")>();
   return {
     ...actual,
-    gemmaJson: vi.fn(),
+    generateJson: vi.fn(),
     SchemaFailure: class extends Error {},
   };
 });
@@ -112,7 +112,7 @@ describe("runEstimator evidence loop", () => {
       ],
     };
 
-    vi.mocked(gemmaJson)
+    vi.mocked(generateJson)
       .mockResolvedValueOnce({
         value: {
           evidence_request: {

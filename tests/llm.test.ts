@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import pg from "pg";
-import { gemmaJson } from "../src/llm.js";
+import { generateJson } from "../src/llm.js";
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -59,7 +59,7 @@ describe("llm audit", { tags: ["db"] }, () => {
       })
     );
 
-    await gemmaJson({
+    await generateJson({
       system: "system",
       user: "user",
       wrapperKey: "result",

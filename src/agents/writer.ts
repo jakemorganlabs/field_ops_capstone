@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Pool, PoolClient } from "pg";
-import { ajv, gemmaJson, type JsonCallResult } from "../llm.js";
+import { ajv, generateJson, type JsonCallResult } from "../llm.js";
 import { findNumericalDrift, type DriftFinding } from "../drift_validator.js";
 import { findMissingAssumptions, type MissingAssumption } from "../assumption_check.js";
 import { runCodeClaimGate, type GatedProposal } from "../code_claim_gate.js";
@@ -328,7 +328,7 @@ async function callWriter(
   if (repairContext) {
     user += "\n\n" + buildRepairPrompt(repairContext);
   }
-  return gemmaJson<ProseOutput>({
+  return generateJson<ProseOutput>({
     system,
     user,
     wrapperKey: "prose",

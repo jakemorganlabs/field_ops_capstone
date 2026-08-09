@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Pool } from "pg";
-import { gemmaJson, SchemaFailure } from "./llm.js";
+import { generateJson, SchemaFailure } from "./llm.js";
 import type { ProjectSpec, QualificationRules, RouteResult } from "./qualification.js";
 import { qualify } from "./qualification.js";
 import { logStage } from "./log.js";
@@ -46,7 +46,7 @@ async function runExtraction(ctx: PipelineContext): Promise<void> {
 
   const schema = await loadProjectSpecSchema();
   const started = Date.now();
-  const result = await gemmaJson<ExtractedSpec>({
+  const result = await generateJson<ExtractedSpec>({
     system: buildExtractionSystemPrompt(schema),
     user: JSON.stringify(ctx.intake, null, 2),
     wrapperKey: "spec",

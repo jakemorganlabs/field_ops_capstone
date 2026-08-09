@@ -177,7 +177,7 @@ async function writeAuditTokens(runId: string, stage: string, tokensIn: number, 
   }
 }
 
-export async function gemmaJson<T>(opts: {
+export async function generateJson<T>(opts: {
   system: string;
   user: string;
   wrapperKey: string;

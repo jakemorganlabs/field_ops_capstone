@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { ajv, gemmaJson, type JsonCallResult } from "../llm.js";
+import { ajv, generateJson, type JsonCallResult } from "../llm.js";
 import { logStage } from "../log.js";
 import type { Intent, IntentResult, Retrieved } from "../retrieval.js";
 import type { ProjectSpec } from "../qualification.js";
@@ -94,7 +94,7 @@ function buildUserPrompt(input: ReviewInput): string {
 
 export async function runReviewer(input: ReviewInput): Promise<Critique> {
   const critiqueSchema = await loadCritiqueSchema();
-  const response: JsonCallResult<Critique> = await gemmaJson<Critique>({
+  const response: JsonCallResult<Critique> = await generateJson<Critique>({
     system: buildSystemPrompt(),
     user: buildUserPrompt(input),
     wrapperKey: "critique",

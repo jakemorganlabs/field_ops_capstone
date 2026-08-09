@@ -4,6 +4,8 @@
 
 A construction-proposal pipeline. It extracts a project spec from an intake, retrieves evidence, estimates a bill of materials, writes a proposal, and reviews the output.
 
+NOTE: The pipeline reads the generation model from `GENERATION_MODEL_ID`. The full local eval uses `google/gemma-4-26B-A4B-it`. The CI smoke eval uses `deepseek-ai/DeepSeek-V4-Flash` for speed.
+
 ## Guarantees
 
 1. Schema gates validate every LLM output against JSON Schema 2020-12.
@@ -28,11 +30,13 @@ A construction-proposal pipeline. It extracts a project spec from an intake, ret
 
 | Role | Env name | Current model |
 | --- | --- | --- |
-| Generation | `GENERATION_MODEL_ID` | `deepseek-ai/DeepSeek-V4-Flash` |
-| Judge | `JUDGE_MODEL_ID` | stored as a GitHub secret |
-| Embedding | `EMBEDDING_MODEL_ID` | `Qwen/Qwen3-Embedding-4B` |
+| Role | Env name | CI smoke eval | Full local eval |
+| --- | --- | --- | --- |
+| Generation | `GENERATION_MODEL_ID` | `deepseek-ai/DeepSeek-V4-Flash` | `google/gemma-4-26B-A4B-it` |
+| Judge | `JUDGE_MODEL_ID` | stored as a GitHub secret | stored as a GitHub secret |
+| Embedding | `EMBEDDING_MODEL_ID` | `Qwen/Qwen3-Embedding-4B` | `Qwen/Qwen3-Embedding-4B` |
 
-Source: `.github/workflows/evals.yml`
+Source: `.github/workflows/evals.yml` and `config/pricing.json`
 
 ## Evaluation
 

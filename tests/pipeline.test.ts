@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import pg from "pg";
 import { runPipeline } from "../src/pipeline.js";
-import { gemmaJson } from "../src/llm.js";
+import { generateJson } from "../src/llm.js";
 
 vi.mock("../src/llm.js", () => ({
-  gemmaJson: vi.fn(),
+  generateJson: vi.fn(),
   SchemaFailure: class extends Error {},
 }));
 
@@ -45,7 +45,7 @@ describe("pipeline", { tags: ["db"] }, () => {
   }
 
   it("proceeds for a complete intake", async () => {
-    vi.mocked(gemmaJson).mockResolvedValueOnce({
+    vi.mocked(generateJson).mockResolvedValueOnce({
       value: {
         project_name: "Tower A",
         scope: "Fiber install",
@@ -75,7 +75,7 @@ describe("pipeline", { tags: ["db"] }, () => {
   });
 
   it("clarifies a vague intake", async () => {
-    vi.mocked(gemmaJson).mockResolvedValueOnce({
+    vi.mocked(generateJson).mockResolvedValueOnce({
       value: {
         project_name: "Site work",
         scope: "Install something",
@@ -97,7 +97,7 @@ describe("pipeline", { tags: ["db"] }, () => {
   });
 
   it("rejects an incomplete intake", async () => {
-    vi.mocked(gemmaJson).mockResolvedValueOnce({
+    vi.mocked(generateJson).mockResolvedValueOnce({
       value: {
         project_name: "Home alarm",
         confidence: 0.9,
@@ -117,7 +117,7 @@ describe("pipeline", { tags: ["db"] }, () => {
   });
 
   it("clarifies when extraction confidence is below the floor", async () => {
-    vi.mocked(gemmaJson).mockResolvedValueOnce({
+    vi.mocked(generateJson).mockResolvedValueOnce({
       value: {
         project_name: "Tower A",
         scope: "Fiber install",

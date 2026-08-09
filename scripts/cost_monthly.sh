@@ -55,7 +55,8 @@ async function main() {
     await pool.end();
   }
 
-  const generationRate = pricing.models["google/gemma-4-26B-A4B-it"] || { input_per_1m: 0, output_per_1m: 0 };
+  const generationModelId = process.env.GENERATION_MODEL_ID || "google/gemma-4-26B-A4B-it";
+  const generationRate = pricing.models[generationModelId] || { input_per_1m: 0, output_per_1m: 0 };
   let total = 0;
   const lines = [];
   for (const row of rows) {
