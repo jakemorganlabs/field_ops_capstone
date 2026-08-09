@@ -34,6 +34,7 @@ async function embedBatchOnce(
       input: texts,
       dimensions: cfg.dimensions,
     }),
+    signal: AbortSignal.timeout(120000),
   });
 
   if (response.status === 401 || response.status === 402) {
