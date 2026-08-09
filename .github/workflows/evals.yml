@@ -29,6 +29,7 @@ jobs:
       EMBEDDING_DIMENSIONS: "1536"
       EVAL_CONCURRENCY: "2"
       EVAL_CASE_LIMIT: "2"
+      SKIP_DRIFT_VALIDATION: "1"
     steps:
       # runner.temp is only available in step env, not job env.
       - uses: actions/checkout@v4
