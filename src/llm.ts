@@ -20,6 +20,102 @@ export class SchemaFailure extends Error {
   }
 }
 
+export async function judgeJson<T>(opts: {
+  system: string;
+  user: string;
+  wrapperKey: string;
+  schema: object;
+  maxTokens: number;
+}): Promise<JsonCallResult<T>> {
+  const apiKey = process.env.DEEPINFRA_API_KEY;
+  if (!apiKey) {
+    throw new Error("DEEPINFRA_API_KEY is not set");
+  }
+
+  const modelId = process.env.JUDGE_MODEL_ID;
+  if (!modelId) {
+    throw new Error("JUDGE_MODEL_ID is not set");
+  }
+
+  const wrapperSchema = {
+    type: "object",
+    additionalProperties: false,
+    required: [opts.wrapperKey],
+    properties: {
+      [opts.wrapperKey]: opts.schema,
+    },
+  };
+  const validate = ajv.compile(wrapperSchema);
+
+  const messages: Array<{ role: string; content: string }> = [
+    { role: "system", content: opts.system },
+    { role: "user", content: opts.user },
+  ];
+
+  const url = "https://api.deepinfra.com/v1/openai/chat/completions";
+  const rawOutputs: string[] = [];
+  let repaired = false;
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    if (attempt === 1) {
+      repaired = true;
+      const fields = requiredFields(opts.schema);
+      const repairPrompt = `The previous response failed validation. Errors: ${JSON.stringify(
+        validate.errors ?? []
+      )}. Restate the wrapper key "${opts.wrapperKey}". List every required field: ${fields.join(
+        ", "
+      )}. Use "" and 0, not null.`;
+      messages.push({ role: "user", content: repairPrompt });
+    }
+
+    const started = Date.now();
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: modelId,
+        messages,
+        temperature: 0,
+        response_format: { type: "json_object" },
+        max_tokens: opts.maxTokens,
+      }),
+    });
+    const latency_ms = Date.now() - started;
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`judge API returned HTTP ${response.status}: ${text}`);
+    }
+
+    const json = (await response.json()) as DeepInfraResponse;
+    const raw = json.choices?.[0]?.message?.content ?? "";
+    rawOutputs.push(raw);
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      continue;
+    }
+
+    if (validate(parsed)) {
+      const value = (parsed as Record<string, unknown>)[opts.wrapperKey] as T;
+      return {
+        value,
+        tokens_in: json.usage?.prompt_tokens ?? 0,
+        tokens_out: json.usage?.completion_tokens ?? 0,
+        latency_ms,
+        repaired,
+      };
+    }
+  }
+
+  throw new SchemaFailure("judge schema validation failed after repair", rawOutputs);
+}
+
 interface DeepInfraChoice {
   message?: {
     content?: string;
