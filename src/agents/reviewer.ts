@@ -72,7 +72,7 @@ function buildResponseSchema(critiqueSchema: { $ref: string }): object {
             severity: { type: "string", enum: ["error", "warning", "info"] },
             target_agent: { type: "string", enum: ["estimator", "writer"] },
             description: { type: "string" },
-            evidence_chunk_id: { type: "string", format: "uuid" },
+            evidence_chunk_id: { anyOf: [{ type: "string", format: "uuid" }, { type: "string", maxLength: 0 }] },
             evidence_snippet: { type: "string" },
           },
         },
