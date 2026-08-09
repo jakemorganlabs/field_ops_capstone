@@ -22,7 +22,6 @@ jobs:
       DATABASE_URL: postgresql://fieldops:fieldops@127.0.0.1:5432/fieldops_eval
       DEEPINFRA_API_KEY: ${{ secrets.DEEPINFRA_API_KEY }}
       JUDGE_MODEL_ID: ${{ secrets.JUDGE_MODEL_ID }}
-      OBJECT_STORE_DIR: ${{ runner.temp }}/objects
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,7 +31,13 @@ jobs:
       - run: npm run migrate
       - run: npm test
       - run: npm run seed:corpus
+        env:
+          OBJECT_STORE_DIR: ${{ runner.temp }}/objects
       - run: npm run eval
+        env:
+          OBJECT_STORE_DIR: ${{ runner.temp }}/objects
       - run: npm run eval:gate
       - run: npm run badge
         if: always()
+        env:
+          OBJECT_STORE_DIR: ${{ runner.temp }}/objects
