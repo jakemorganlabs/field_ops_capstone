@@ -1,6 +1,6 @@
 {
   "recall_at_k": {
-    "similar_projects": 0.8,
+    "similar_projects": 1.0,
     "manufacturer_specs": 0.8,
     "code_references": 0.8
   },
