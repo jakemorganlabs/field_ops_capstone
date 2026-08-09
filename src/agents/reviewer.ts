@@ -61,7 +61,22 @@ function buildResponseSchema(critiqueSchema: { $ref: string }): object {
     required: ["decision", "issues"],
     properties: {
       decision: { type: "string", enum: ["pass", "revise"] },
-      issues: { type: "array", items: { $ref: "critique#/$defs/issue" } },
+      issues: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: true,
+          required: ["type", "severity", "target_agent", "description", "evidence_chunk_id"],
+          properties: {
+            type: { type: "string", enum: ["missing_item", "pricing_anomaly", "regulatory_gap", "scope_mismatch"] },
+            severity: { type: "string", enum: ["error", "warning", "info"] },
+            target_agent: { type: "string", enum: ["estimator", "writer"] },
+            description: { type: "string" },
+            evidence_chunk_id: { type: "string", format: "uuid" },
+            evidence_snippet: { type: "string" },
+          },
+        },
+      },
       comment: { type: "string" },
     },
   };
@@ -76,10 +91,11 @@ Required response format:
 
 Issue rules:
 - Report only real defects. Do not report style issues.
-- Defect types are: missing_item, pricing_anomaly, regulatory_gap, scope_mismatch.
-- Give every issue a severity of error, warning, or info.
-- Give every issue a target_agent of estimator or writer.
-- Name the evidence chunk that supports each finding with evidence_chunk_id.
+- Each issue is a JSON object with exactly these field names: "type", "severity", "target_agent", "description", "evidence_chunk_id", and optional "evidence_snippet".
+- "type" is one of: missing_item, pricing_anomaly, regulatory_gap, scope_mismatch.
+- "severity" is one of: error, warning, info.
+- "target_agent" is one of: estimator, writer.
+- "evidence_chunk_id" is the id of the evidence chunk that supports the finding, copied exactly from the chunk list.
 - A pass decision means the draft is acceptable. It is advice only. Other gates still apply.
 - A revise decision means one or more real defects must be fixed before the run can complete.
 
