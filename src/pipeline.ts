@@ -6,6 +6,16 @@ import { generateJson, SchemaFailure } from "./llm.js";
 import type { ProjectSpec, QualificationRules, RouteResult } from "./qualification.js";
 import { qualify } from "./qualification.js";
 import { logStage } from "./log.js";
+import {
+  buildIntentQueries,
+  retrieveIntent,
+  type Intent,
+  type IntentResult,
+  type RetrievalCfg,
+} from "./retrieval.js";
+import { runEstimator } from "./agents/estimator.js";
+import { runWriter } from "./agents/writer.js";
+import { reviewAndRegenerate } from "./review_loop.js";
 
 export interface ExtractedSpec extends ProjectSpec {
   confidence: number;
@@ -33,6 +43,7 @@ export async function runPipeline(run_id: string, intake: unknown, pool: Pool): 
   const ctx: PipelineContext = { run_id, intake, pool };
   try {
     await runExtraction(ctx);
+    await completeProposal(ctx);
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
     await failRun(ctx, error);
@@ -77,6 +88,64 @@ async function runExtraction(ctx: PipelineContext): Promise<void> {
   });
 
   await writeSpecAndRun(ctx, result.value, decision);
+}
+
+/**
+ * Advance a proceed-qualified run through retrieval, estimation, proposal
+ * writing, and the review loop, which sets the terminal status. Runs that
+ * qualified as clarify or reject are already terminal and are left untouched.
+ */
+async function completeProposal(ctx: PipelineContext): Promise<void> {
+  const { pool, run_id } = ctx;
+
+  let status: string;
+  let specId: string | null;
+  const client = await pool.connect();
+  try {
+    const result = await client.query("SELECT status, spec_id FROM run WHERE id = $1", [run_id]);
+    status = result.rows[0].status;
+    specId = result.rows[0].spec_id;
+  } finally {
+    client.release();
+  }
+
+  if (status !== "running" || !specId) return;
+
+  let spec: ProjectSpec;
+  const specClient = await pool.connect();
+  try {
+    const specResult = await specClient.query("SELECT * FROM spec WHERE id = $1", [specId]);
+    spec = specResult.rows[0] as ProjectSpec;
+  } finally {
+    specClient.release();
+  }
+
+  const retrievalCfg = await buildRetrievalCfg(pool);
+  const rateMap = JSON.parse(await readConfig("labor_rates.json")) as Record<string, string>;
+  const taxRate = String((JSON.parse(await readConfig("tax.json")) as { rate: string }).rate);
+
+  const queries = buildIntentQueries(spec);
+  const intents: Intent[] = ["similar_projects", "manufacturer_specs", "code_references"];
+  const evidence = {} as Record<Intent, IntentResult>;
+  for (const intent of intents) {
+    evidence[intent] = await retrieveIntent(intent, queries[intent], {}, retrievalCfg);
+  }
+
+  const estimatorOutcome = await runEstimator(spec, evidence, {
+    pool,
+    retrievalCfg,
+    rateMap,
+    taxRate,
+    runId: run_id,
+  });
+
+  await runWriter(estimatorOutcome.bom, estimatorOutcome.totals, evidence.similar_projects, {
+    pool,
+    runId: run_id,
+    taxRate,
+  });
+
+  await reviewAndRegenerate(run_id, { pool, retrievalCfg, rateMap, taxRate });
 }
 
 function decideRoute(spec: ExtractedSpec, extractionCfg: ExtractionConfig, rules: QualificationRules): RouteDecision {
@@ -203,6 +272,29 @@ async function failRun(ctx: PipelineContext, error: string): Promise<void> {
   } finally {
     client.release();
   }
+}
+
+async function buildRetrievalCfg(pool: Pool): Promise<RetrievalCfg> {
+  const cfg = JSON.parse(await readConfig("retrieval.json")) as {
+    floors: Record<Intent, number>;
+    max_chunks_per_query: number;
+  };
+  return {
+    pool,
+    embedCfg: {
+      baseUrl: process.env.EMBEDDING_BASE_URL ?? "",
+      modelId: process.env.EMBEDDING_MODEL_ID ?? "",
+      dimensions: Number(process.env.EMBEDDING_DIMENSIONS ?? 1536),
+      apiKey: process.env.DEEPINFRA_API_KEY ?? "",
+    },
+    floors: cfg.floors,
+    maxChunks: cfg.max_chunks_per_query,
+  };
+}
+
+async function readConfig(name: string): Promise<string> {
+  const path = join(dirname(fileURLToPath(import.meta.url)), "..", "config", name);
+  return readFile(path, "utf-8");
 }
 
 async function loadProjectSpecSchema(): Promise<object> {
