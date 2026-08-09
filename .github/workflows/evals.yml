@@ -1,0 +1,38 @@
+name: Evals
+
+on:
+  push:
+    paths-ignore: ['docs/**', '*.md']
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg18
+        env:
+          POSTGRES_USER: fieldops
+          POSTGRES_PASSWORD: fieldops
+          POSTGRES_DB: fieldops_eval
+        options: >-
+          --health-cmd "pg_isready -U fieldops" --health-interval 5s --health-retries 20
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://fieldops:fieldops@127.0.0.1:5432/fieldops_eval
+      DEEPINFRA_API_KEY: ${{ secrets.DEEPINFRA_API_KEY }}
+      JUDGE_MODEL_ID: ${{ secrets.JUDGE_MODEL_ID }}
+      OBJECT_STORE_DIR: ${{ runner.temp }}/objects
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run migrate
+      - run: npm test
+      - run: npm run seed:corpus
+      - run: npm run eval
+      - run: npm run eval:gate
+      - run: npm run badge
+        if: always()

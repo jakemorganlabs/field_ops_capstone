@@ -8,15 +8,11 @@ import { runPipeline } from "../src/pipeline.js";
 import { reviewAndRegenerate } from "../src/review_loop.js";
 import { runEstimator, type BillOfMaterials, type ComputedTotals } from "../src/agents/estimator.js";
 import { runWriter, type ProposalDocument } from "../src/agents/writer.js";
-import { buildIntentQueries, retrieveIntent, type Intent } from "../src/retrieval.js";
-import { ingestFiles } from "../src/ingest/ingest.js";
-import { fsObjectStore } from "../src/objectstore.js";
-import { type Intent, type RetrievalCfg } from "../src/retrieval.js";
-import { type EmbedCfg } from "../src/ingest/embedder.js";
+import { buildIntentQueries, retrieveIntent, type Intent, type RetrievalCfg } from "../src/retrieval.js";
+import type { EmbedCfg } from "../src/ingest/embedder.js";
 import type { ProjectSpec } from "../src/qualification.js";
-import type { BillOfMaterials, ComputedTotals } from "../src/agents/estimator.js";
-import type { ProposalDocument } from "../src/agents/writer.js";
 import type { Critique } from "../src/agents/reviewer.js";
+import { runMigrations, cleanDatabase, seedCorpus } from "./seed.js";
 import { scoreRetrieval } from "./metrics/retrieval.js";
 import { scoreStructural } from "./metrics/structural.js";
 import { scoreSemantic } from "./metrics/semantic.js";
@@ -30,7 +26,6 @@ config();
 
 const DATABASE_URL = process.env.DATABASE_URL ?? "";
 const EVAL_ALLOW_WIPE = process.env.EVAL_ALLOW_WIPE === "1";
-const OBJECT_STORE_DIR = process.env.OBJECT_STORE_DIR ?? "./eval_objects";
 const EMBEDDING_BASE_URL = process.env.EMBEDDING_BASE_URL ?? "";
 const EMBEDDING_MODEL_ID = process.env.EMBEDDING_MODEL_ID ?? "";
 const EMBEDDING_DIMENSIONS = Number(process.env.EMBEDDING_DIMENSIONS ?? 1536);
@@ -65,68 +60,6 @@ async function getCommitHash(): Promise<string> {
     return await execFile("git", ["rev-parse", "HEAD"]);
   } catch {
     return "unknown";
-  }
-}
-
-async function runMigrations(pool: pg.Pool): Promise<void> {
-  const client = await pool.connect();
-  try {
-    const files = (await readdir("migrations")).filter((f) => f.endsWith(".sql")).sort();
-    for (const file of files) {
-      const sql = await readFile(join("migrations", file), "utf-8");
-      await client.query(sql);
-    }
-  } finally {
-    client.release();
-  }
-}
-
-async function cleanDatabase(pool: pg.Pool): Promise<void> {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    await client.query("TRUNCATE TABLE audit, chunk, critique, dead_letter, document, feedback, human_edits, run, spec CASCADE");
-    await client.query("COMMIT");
-  } catch (err) {
-    await client.query("ROLLBACK").catch(() => {});
-    throw err;
-  } finally {
-    client.release();
-  }
-}
-
-async function seedCorpus(pool: pg.Pool): Promise<void> {
-  const store = fsObjectStore(OBJECT_STORE_DIR);
-  const embedCfg: EmbedCfg = {
-    baseUrl: EMBEDDING_BASE_URL,
-    modelId: EMBEDDING_MODEL_ID,
-    dimensions: EMBEDDING_DIMENSIONS,
-    apiKey: DEEPINFRA_API_KEY,
-  };
-
-  const files = (await readdir("fixtures/synthetic_corpus")).filter((f) => {
-    const lower = f.toLowerCase();
-    return lower.endsWith(".md") || lower.endsWith(".txt") || lower.endsWith(".pdf");
-  });
-
-  await ingestFiles(
-    files.map((f) => join("fixtures/synthetic_corpus", f)),
-    {
-      docType: "eval_document",
-      source: "eval_corpus",
-      pool,
-      store,
-      embedCfg,
-      objectStorePrefix: "eval_corpus",
-    }
-  );
-
-  const client = await pool.connect();
-  try {
-    await client.query("UPDATE document SET source = 'eval_' || source");
-    await client.query("UPDATE chunk SET source = 'eval_' || source");
-  } finally {
-    client.release();
   }
 }
 

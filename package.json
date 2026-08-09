@@ -12,8 +12,11 @@
     "writer-smoke": "bash scripts/writer_smoke.sh",
     "reviewer-smoke": "bash scripts/reviewer_smoke.sh",
     "server": "node --experimental-strip-types --import ./scripts/ts-register.mjs src/server.ts",
+    "seed:corpus": "node --experimental-strip-types --import ./scripts/ts-register.mjs scripts/seed_corpus.ts",
     "eval": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/run.ts",
     "eval-report": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/report.ts",
+    "eval:gate": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/gate.ts",
+    "badge": "node --experimental-strip-types --import ./scripts/ts-register.mjs evals/badge.ts",
     "test": "vitest run"
   },
   "keywords": [],
