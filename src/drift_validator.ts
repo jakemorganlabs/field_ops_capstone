@@ -164,8 +164,9 @@ function scanLineItem(
 /**
  * Find every number token in the proposal prose fields that is not present in
  * the allowed set derived from the BOM, computed totals, and spec. Also report
- * a changed total. Exact match only, zero tolerance. Numbers inside code claim
- * snippets are not scanned.
+ * a changed total. Exact match only, zero tolerance. The terms field is exempt
+ * (contract boilerplate). A code claim number is grounded if it appears in the
+ * claim's own cited snippet; snippets themselves are not scanned.
  */
 export function findNumericalDrift(
   proposal: ProposalDocument,
@@ -191,9 +192,8 @@ export function findNumericalDrift(
     }
   }
 
-  if (proposal.terms !== undefined) {
-    scanField("terms", proposal.terms, allowed, findings);
-  }
+  // terms is contractual boilerplate (for example, "net 30 days") and is
+  // intentionally exempt from numeric drift scanning.
 
   for (let i = 0; i < proposal.assumptions.length; i += 1) {
     scanField(`assumptions[${i}]`, proposal.assumptions[i], allowed, findings);
@@ -201,8 +201,10 @@ export function findNumericalDrift(
 
   for (let i = 0; i < proposal.code_claims.length; i += 1) {
     const claim = proposal.code_claims[i];
-    scanField(`code_claims[${i}].claim`, claim.claim, allowed, findings);
-    // Snippets are intentionally exempt from drift scanning.
+    const claimAllowed = [...allowed, ...extractNumbersFromText(claim.snippet)];
+    scanField(`code_claims[${i}].claim`, claim.claim, claimAllowed, findings);
+    // A claim number is grounded if it appears in the BOM, totals, spec, or the
+    // snippet the claim cites. Snippets themselves are not scanned.
   }
 
   return findings;
