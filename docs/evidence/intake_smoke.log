@@ -1,0 +1,14 @@
+=== reset state ===
+NOTICE:  truncate cascades to table "agent_state"
+NOTICE:  truncate cascades to table "critique"
+NOTICE:  truncate cascades to table "human_edits"
+NOTICE:  truncate cascades to table "feedback"
+=== start server ===
+=== valid intake proceeds ===
+body: {"run_id":"8f7626b9-710b-447e-add3-696cadeb3a77","status":"accepted"}
+=== vague intake clarifies ===
+=== residential alarm rejects ===
+=== idempotency: same body returns same run_id ===
+=== unsigned request returns 401 ===
+=== smoke passed ===
+=== smoke passed ===
