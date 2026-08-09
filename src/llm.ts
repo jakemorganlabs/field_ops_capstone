@@ -45,7 +45,7 @@ export async function judgeJson<T>(opts: {
 
   const wrapperSchema = {
     type: "object",
-    additionalProperties: false,
+    additionalProperties: true,
     required: [opts.wrapperKey],
     properties: {
       [opts.wrapperKey]: opts.schema,
@@ -197,7 +197,7 @@ export async function generateJson<T>(opts: {
 
   const wrapperSchema = {
     type: "object",
-    additionalProperties: false,
+    additionalProperties: true,
     required: [opts.wrapperKey],
     properties: {
       [opts.wrapperKey]: opts.schema,
