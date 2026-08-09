@@ -50,23 +50,18 @@ export async function seedCorpus(pool: pg.Pool): Promise<void> {
     return lower.endsWith(".md") || lower.endsWith(".txt") || lower.endsWith(".pdf");
   });
 
-  await ingestFiles(
-    files.map((f) => join("fixtures/synthetic_corpus", f)),
-    {
-      docType: "eval_document",
-      source: "eval_corpus",
-      pool,
-      store,
-      embedCfg,
-      objectStorePrefix: "eval_corpus",
-    }
-  );
-
-  const client = await pool.connect();
-  try {
-    await client.query("UPDATE document SET source = 'eval_' || source");
-    await client.query("UPDATE chunk SET source = 'eval_' || source");
-  } finally {
-    client.release();
+  // Ingest each file with its filename as the source so eval gold sources match.
+  for (const file of files) {
+    await ingestFiles(
+      [join("fixtures/synthetic_corpus", file)],
+      {
+        docType: "eval_document",
+        source: file,
+        pool,
+        store,
+        embedCfg,
+        objectStorePrefix: "eval_corpus",
+      }
+    );
   }
 }
