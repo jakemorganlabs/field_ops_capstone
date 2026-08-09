@@ -15,10 +15,9 @@ function sourceFromChunkId(chunkId: string): string {
 }
 
 function sourceFromChunk(chunk: { source?: string; chunk_id?: string }): string {
-  if (typeof chunk.source === "string" && chunk.source.length > 0) {
-    return chunk.source;
-  }
-  return sourceFromChunkId(chunk.chunk_id ?? "");
+  const raw = typeof chunk.source === "string" && chunk.source.length > 0 ? chunk.source : sourceFromChunkId(chunk.chunk_id ?? "");
+  // evals/seed.ts prefixes sources with "eval_"; strip it for scoring.
+  return raw.replace(/^eval_/, "");
 }
 
 export function scoreRetrieval(samples: EvalSample[], thresholds: Record<string, number>): RetrievalMetric[] {
