@@ -382,14 +382,12 @@ export async function runWriter(
     response = repairResponse;
     proposal = buildProposal(deps.runId, bom, totals, deps.taxRate, repairResponse.value);
 
-    findings = findNumericalDrift(proposal, bom, totals, spec);
-    missing = findMissingAssumptions(proposal, bom);
-
-    if (findings.length > 0 || missing.length > 0) {
-      throw new Error(
-        `writer failed validation after repair: drift=${JSON.stringify(findings)}, missing=${JSON.stringify(missing)}`
-      );
-    }
+    // Do not throw on residual drift or missing assumptions after the repair
+    // round. The deterministic gate in the review loop re-runs the same checks
+    // on the persisted proposal and routes any remaining findings to the human
+    // gate as open issues (needs_review). A hard failure here would crash the
+    // run before that gate can escalate it, which is the wrong response to an
+    // ungrounded number in draft prose.
   }
 
   const gated: GatedProposal = runCodeClaimGate(proposal, retrieved);
