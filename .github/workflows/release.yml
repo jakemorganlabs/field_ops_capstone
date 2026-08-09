@@ -21,9 +21,13 @@ jobs:
         with:
           generate_release_notes: true
 
+      - name: Compute subject digest
+        id: digest
+        run: echo "sha256=$(printf '%s' '${{ github.sha }}' | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
       - name: Generate provenance attestation
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: fieldops-intelligence
-          subject-digest: sha256:${{ github.sha }}
+          subject-digest: sha256:${{ steps.digest.outputs.sha256 }}
           push-to-registry: false
