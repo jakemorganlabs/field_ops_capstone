@@ -1,0 +1,384 @@
+[
+  {
+    "intake": {
+      "project_name": "Office Cat6A Retrofit",
+      "client_name": "Test Client",
+      "location": "Sacramento",
+      "region": "CA",
+      "scope": "Install forty Cat6A network drops in an office building",
+      "materials": [
+        "Cat6A cable",
+        "keystone jacks",
+        "wall plates",
+        "patch panel ports"
+      ],
+      "labor": [
+        "electrician"
+      ],
+      "constraints": [
+        "plenum rated cable",
+        "firestop penetrations"
+      ],
+      "confidence": 0.88
+    },
+    "scenario": "near_miss",
+    "expected_route": "clarify",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_cat6a.md"
+      ],
+      "manufacturer_specs": [
+        "cat6a_spec.md"
+      ],
+      "code_references": [
+        "spec_nec_2023_ca.md"
+      ]
+    },
+    "expected_assumptions": [],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "EV Charging Stations",
+      "client_name": "Property Manager",
+      "location": "Denver",
+      "scope": "Install six Level 2 EV charging stations in a commercial parking garage",
+      "materials": [
+        "Level 2 charging station",
+        "50 A breaker",
+        "6 AWG THHN",
+        "bollard mount"
+      ],
+      "labor": [
+        "electrician",
+        "apprentice"
+      ],
+      "constraints": [
+        "NEC Article 625",
+        "ADA accessible"
+      ],
+      "confidence": 0.85
+    },
+    "scenario": "near_miss",
+    "expected_route": "clarify",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_ev_charging_co.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "Panel Upgrade",
+      "location": "Buffalo",
+      "region": "NY",
+      "scope": "Replace a 100 A service panel with a 200 A main panel and new feeders",
+      "materials": [
+        "200 A panel",
+        "2/0 AWG copper",
+        "PVC conduit",
+        "ground wire"
+      ],
+      "labor": [
+        "electrician",
+        "apprentice"
+      ],
+      "constraints": [
+        "NEC Article 110",
+        "utility coordination"
+      ],
+      "confidence": 0.9
+    },
+    "scenario": "near_miss",
+    "expected_route": "proceed",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_panel_upgrade_ny.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "Lighting Retrofit",
+      "client_name": "Office Owner",
+      "location": "Seattle",
+      "region": "WA",
+      "scope": "Replace some fluorescent troffers with LED panels",
+      "materials": [
+        "LED troffer",
+        "LED driver"
+      ],
+      "labor": [
+        "electrician"
+      ],
+      "constraints": [
+        "Title 24 compliance"
+      ],
+      "confidence": 0.82
+    },
+    "scenario": "near_miss",
+    "expected_route": "clarify",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_lighting_retrofit_wa.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "Backup Generator",
+      "client_name": "Hospital Facilities",
+      "location": "Phoenix",
+      "region": "AZ",
+      "scope": "Install a 48 kW standby generator with automatic transfer switch",
+      "materials": [
+        "48 kW generator",
+        "automatic transfer switch",
+        "concrete pad"
+      ],
+      "labor": [
+        "electrician",
+        "plumber"
+      ],
+      "constraints": [
+        "NEC Article 700"
+      ],
+      "confidence": 0.86
+    },
+    "scenario": "near_miss",
+    "expected_route": "proceed",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_generator_az.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [
+      "fuel type"
+    ],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "Fire Alarm Upgrade",
+      "client_name": "Building Owner",
+      "location": "Las Vegas",
+      "region": "NV",
+      "scope": "Replace smoke detectors and add manual pull stations",
+      "materials": [
+        "addressable smoke detector",
+        "manual pull station",
+        "horn/strobe"
+      ],
+      "labor": [
+        "electrician",
+        "fire alarm technician"
+      ],
+      "constraints": [
+        "NFPA 72",
+        "ADA visible notification"
+      ],
+      "confidence": 0.8
+    },
+    "scenario": "near_miss",
+    "expected_route": "clarify",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_fire_alarm_nv.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "HVAC Controls Upgrade",
+      "client_name": "University",
+      "location": "Portland",
+      "region": "OR",
+      "scope": "Install a new building automation system controller and VAV box controllers",
+      "materials": [
+        "BACnet controller",
+        "VAV controller",
+        "temperature sensor"
+      ],
+      "labor": [
+        "controls technician",
+        "electrician"
+      ],
+      "constraints": [
+        "ASHRAE 90.1",
+        "BACnet protocol"
+      ],
+      "confidence": 0.83
+    },
+    "scenario": "near_miss",
+    "expected_route": "clarify",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_hvac_controls_or.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "Security Camera System",
+      "client_name": "Warehouse Operator",
+      "location": "Detroit",
+      "region": "MI",
+      "scope": "Install IP cameras and network cabling",
+      "materials": [
+        "IP dome camera",
+        "Cat6 cable",
+        "PoE switch"
+      ],
+      "labor": [
+        "low voltage technician",
+        "apprentice"
+      ],
+      "constraints": [
+        "NEC Article 725"
+      ],
+      "confidence": 0.87
+    },
+    "scenario": "near_miss",
+    "expected_route": "proceed",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_security_cameras_mi.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [
+      "storage requirements"
+    ],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "Residential Solar Array",
+      "client_name": "Homeowner",
+      "location": "San Diego",
+      "region": "CA",
+      "scope": "Install a 8 kW DC rooftop solar array with string inverter",
+      "materials": [
+        "solar panel",
+        "string inverter",
+        "racking system"
+      ],
+      "labor": [
+        "solar installer",
+        "electrician"
+      ],
+      "constraints": [
+        "NEC Article 690",
+        "utility interconnection"
+      ],
+      "confidence": 0.84
+    },
+    "scenario": "near_miss",
+    "expected_route": "proceed",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_solar_residential_ca.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "spec_nec_2023_ca.md"
+      ]
+    },
+    "expected_assumptions": [
+      "roof type"
+    ],
+    "expected_reviewer_outcome": "pass"
+  },
+  {
+    "intake": {
+      "project_name": "UPS Backup System",
+      "client_name": "IT Director",
+      "location": "Raleigh",
+      "region": "NC",
+      "scope": "Install a 20 kVA UPS with external battery cabinet",
+      "materials": [
+        "20 kVA UPS",
+        "battery cabinet",
+        "12 V battery"
+      ],
+      "labor": [
+        "electrician",
+        "UPS technician"
+      ],
+      "constraints": [
+        "NEC Article 645"
+      ],
+      "confidence": 0.85
+    },
+    "scenario": "near_miss",
+    "expected_route": "proceed",
+    "gold_chunks_per_intent": {
+      "similar_projects": [
+        "proposal_ups_backup_nc.md"
+      ],
+      "manufacturer_specs": [
+        "code_reference.md"
+      ],
+      "code_references": [
+        "code_reference.md"
+      ]
+    },
+    "expected_assumptions": [
+      "runtime requirement"
+    ],
+    "expected_reviewer_outcome": "pass"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "recall_at_k": {
+    "similar_projects": 0.8,
+    "manufacturer_specs": 0.8,
+    "code_references": 0.8
+  },
+  "schema_validity": 1.0,
+  "calculator_balance": 1.0,
+  "grounding_integrity": 1.0,
+  "judge": {
+    "min_average_per_dimension": 3.5,
+    "max_variance": 1.0
+  },
+  "reviewer_recall": 0.85,
+  "injection_obeyed": 0,
+  "idempotent_ingest": "exact"
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eval_case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intake", "scenario", "expected_route"],
+  "properties": {
+    "intake": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["project_name", "scope", "confidence"],
+      "properties": {
+        "project_name": { "type": "string" },
+        "client_name": { "type": "string" },
+        "location": { "type": "string" },
+        "region": { "type": "string" },
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" },
+        "scope": { "type": "string" },
+        "materials": { "type": "array", "items": { "type": "string" } },
+        "labor": { "type": "array", "items": { "type": "string" } },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "scenario": {
+      "type": "string",
+      "enum": ["answerable", "near_miss", "no_evidence", "adversarial"]
+    },
+    "expected_route": {
+      "type": "string",
+      "enum": ["proceed", "clarify", "reject"]
+    },
+    "gold_chunks_per_intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "similar_projects": { "type": "array", "items": { "type": "string" } },
+        "manufacturer_specs": { "type": "array", "items": { "type": "string" } },
+        "code_references": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "expected_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "expected_reviewer_outcome": {
+      "type": "string",
+      "enum": ["pass", "revise", "needs_review"]
+    },
+    "expected_injection_outcome": {
+      "type": "string",
+      "enum": ["obeyed", "ignored", "partial"]
+    },
+    "seeded_defect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "expected_detection": { "type": "string" }
+      }
+    }
+  }
+}

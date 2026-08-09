@@ -1,0 +1,258 @@
+[
+  {
+    "intake": {
+      "project_name": "Underwater Fiber Link",
+      "client_name": "Marine Research",
+      "location": "Pacific Ocean",
+      "scope": "Install armored fiber optic cable across a submarine trench",
+      "materials": [
+        "armored submarine fiber",
+        "pressure-rated splice"
+      ],
+      "labor": [
+        "marine electrician"
+      ],
+      "constraints": [
+        "depth rating 6000 m"
+      ],
+      "confidence": 0.9
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Mars Colony Power Grid",
+      "client_name": "SpaceX",
+      "location": "Mars",
+      "scope": "Deploy a 1 MW nuclear microreactor power grid for a Mars habitat",
+      "materials": [
+        "nuclear microreactor",
+        "radiation shielding"
+      ],
+      "labor": [
+        "robotic technician"
+      ],
+      "constraints": [
+        "vacuum rated",
+        "radiation hardened"
+      ],
+      "confidence": 0.88
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Quantum Computing Cryogenic Cooling",
+      "client_name": "Research Lab",
+      "location": "Boston",
+      "region": "MA",
+      "scope": "Install dilution refrigeration for a quantum computer",
+      "materials": [
+        "dilution refrigerator",
+        "superconducting cable"
+      ],
+      "labor": [
+        "cryogenic technician"
+      ],
+      "constraints": [
+        "millikelvin operation"
+      ],
+      "confidence": 0.85
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Nuclear Reactor Control System",
+      "client_name": "Utility",
+      "location": "Palo Verde",
+      "region": "AZ",
+      "scope": "Upgrade reactor control system cabling",
+      "materials": [
+        "radiation-hardened cable",
+        "redundant controllers"
+      ],
+      "labor": [
+        "nuclear electrician"
+      ],
+      "constraints": [
+        "10 CFR 50"
+      ],
+      "confidence": 0.87
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Submarine Sonar Array",
+      "client_name": "Navy",
+      "location": "Atlantic Ocean",
+      "scope": "Install towed sonar array on a submarine",
+      "materials": [
+        "sonar array",
+        "tow cable"
+      ],
+      "labor": [
+        "sonar technician"
+      ],
+      "constraints": [
+        "saltwater corrosion"
+      ],
+      "confidence": 0.86
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Satellite Laser Communication",
+      "client_name": "Space Agency",
+      "location": "Low Earth Orbit",
+      "scope": "Install optical communication terminal on a satellite",
+      "materials": [
+        "laser terminal",
+        "gimbal mount"
+      ],
+      "labor": [
+        "aerospace technician"
+      ],
+      "constraints": [
+        "vacuum rated"
+      ],
+      "confidence": 0.84
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Hyperloop Electrical Track",
+      "client_name": "Transport Startup",
+      "location": "Nevada Test Site",
+      "region": "NV",
+      "scope": "Install linear induction motor power feed for hyperloop test track",
+      "materials": [
+        "linear motor",
+        "power feed"
+      ],
+      "labor": [
+        "hyperloop engineer"
+      ],
+      "constraints": [
+        "high speed vibration"
+      ],
+      "confidence": 0.83
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Fusion Reactor Magnet Cooling",
+      "client_name": "Energy Research",
+      "location": "Princeton",
+      "region": "NJ",
+      "scope": "Install superconducting magnet cooling system",
+      "materials": [
+        "superconducting magnet",
+        "cryocooler"
+      ],
+      "labor": [
+        "plasma physicist"
+      ],
+      "constraints": [
+        "tokamak compatible"
+      ],
+      "confidence": 0.82
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Autonomous Drone Charging Swarm",
+      "client_name": "Logistics Company",
+      "location": "Phoenix",
+      "region": "AZ",
+      "scope": "Deploy autonomous drone charging stations across a warehouse campus",
+      "materials": [
+        "drone dock",
+        "wireless charging pad"
+      ],
+      "labor": [
+        "drone technician"
+      ],
+      "constraints": [
+        "FAA Part 107"
+      ],
+      "confidence": 0.85
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  },
+  {
+    "intake": {
+      "project_name": "Deep Sea Mining Equipment",
+      "client_name": "Mining Consortium",
+      "location": "Clarion-Clipperton Zone",
+      "scope": "Install seabed mining power and control umbilical",
+      "materials": [
+        "subsea umbilical",
+        "ROV"
+      ],
+      "labor": [
+        "subsea engineer"
+      ],
+      "constraints": [
+        "ISA regulations"
+      ],
+      "confidence": 0.81
+    },
+    "scenario": "no_evidence",
+    "expected_route": "proceed",
+    "expected_assumptions": [
+      "all materials and labor"
+    ],
+    "expected_reviewer_outcome": "needs_review"
+  }
+]
