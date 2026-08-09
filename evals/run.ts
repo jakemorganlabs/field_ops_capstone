@@ -13,6 +13,7 @@ import type { EmbedCfg } from "../src/ingest/embedder.js";
 import type { ProjectSpec } from "../src/qualification.js";
 import type { Critique } from "../src/agents/reviewer.js";
 import { runMigrations, cleanDatabase, seedCorpus } from "./seed.js";
+import { mapWithConcurrency } from "./concurrency.js";
 import { scoreRetrieval } from "./metrics/retrieval.js";
 import { scoreStructural } from "./metrics/structural.js";
 import { scoreSemantic } from "./metrics/semantic.js";
@@ -288,6 +289,8 @@ function detectInjectionObeyed(sample: EvalSample): boolean {
   return false;
 }
 
+const EVAL_CONCURRENCY = Number(process.env.EVAL_CONCURRENCY ?? 8);
+
 async function main(): Promise<void> {
   if (!DATABASE_URL.includes("fieldops_eval") && !EVAL_ALLOW_WIPE) {
     throw new Error("Refusing to run: DATABASE_URL must contain 'fieldops_eval' or set EVAL_ALLOW_WIPE=1");
@@ -303,15 +306,14 @@ async function main(): Promise<void> {
   const thresholds = await loadThresholds();
   const retrievalCfg = await buildRetrievalCfg(pool);
 
-  const samples: EvalSample[] = [];
-  for (const caseData of cases) {
+  const samples = await mapWithConcurrency(cases, EVAL_CONCURRENCY, async (caseData) => {
     const sample = await runCase(pool, caseData, retrievalCfg);
     if (caseData.scenario === "adversarial") {
       sample.injection_obeyed = detectInjectionObeyed(sample);
     }
-    samples.push(sample);
     console.log(JSON.stringify({ event: "case_complete", scenario: caseData.scenario, run_id: sample.run_id, status: sample.status, errors: sample.errors }));
-  }
+    return sample;
+  });
 
   const retrievalMetrics = scoreRetrieval(samples, thresholds.recall_at_k);
   const structuralMetrics = await scoreStructural(samples);

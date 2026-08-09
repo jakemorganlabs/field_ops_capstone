@@ -1,4 +1,5 @@
 import { judgeJson } from "../../src/llm.js";
+import { mapWithConcurrency } from "../concurrency.js";
 import type { EvalSample } from "./types.js";
 
 export interface JudgeScores {
@@ -64,26 +65,28 @@ export async function scoreSemantic(samples: EvalSample[], threshold: number): P
     "pricing_narrated",
     "concise_without_missing_required_content",
   ];
-  const perSample: JudgeScores[][] = [];
-
-  for (const sample of samples) {
+  const concurrency = Number(process.env.EVAL_CONCURRENCY ?? 8);
+  const perSample: JudgeScores[][] = await mapWithConcurrency(samples, concurrency, async (sample) => {
     if (!sample.proposal) {
-      perSample.push([]);
-      continue;
+      return [];
     }
     const runs: JudgeScores[] = [];
     for (let i = 0; i < 3; i += 1) {
-      const result = await judgeJson<JudgeScores>({
-        system: "You are a strict evaluator of construction proposals. Return only the requested JSON.",
-        user: buildJudgePrompt(sample),
-        wrapperKey: "scores",
-        schema: judgeSchema,
-        maxTokens: 1024,
-      });
-      runs.push(result.value);
+      try {
+        const result = await judgeJson<JudgeScores>({
+          system: "You are a strict evaluator of construction proposals. Return only the requested JSON.",
+          user: buildJudgePrompt(sample),
+          wrapperKey: "scores",
+          schema: judgeSchema,
+          maxTokens: 1024,
+        });
+        runs.push(result.value);
+      } catch (err) {
+        console.error(JSON.stringify({ event: "judge_error", run_id: sample.run_id, error: err instanceof Error ? err.message : String(err) }));
+      }
     }
-    perSample.push(runs);
-  }
+    return runs;
+  });
 
   const metrics: SemanticMetric[] = [];
   for (const dimension of dimensions) {

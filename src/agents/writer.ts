@@ -320,6 +320,7 @@ async function callWriter(
   totals: ComputedTotals,
   templates: IntentResult,
   taxRate: string,
+  runId: string,
   repairContext?: WriterRepairContext
 ): Promise<JsonCallResult<ProseOutput>> {
   const system = buildSystemPrompt();
@@ -333,7 +334,7 @@ async function callWriter(
     wrapperKey: "prose",
     schema: buildProseSchema(),
     maxTokens: 4096,
-    audit: { run_id: deps.runId, stage: "writer" },
+    audit: { run_id: runId, stage: "writer" },
   });
 }
 
@@ -360,7 +361,7 @@ export async function runWriter(
     client.release();
   }
 
-  let response = await callWriter(spec, bom, totals, templates, deps.taxRate, repairContext);
+  let response = await callWriter(spec, bom, totals, templates, deps.taxRate, deps.runId, repairContext);
   let proposal = buildProposal(deps.runId, bom, totals, deps.taxRate, response.value);
 
   let findings = findNumericalDrift(proposal, bom, totals, spec);
@@ -373,6 +374,7 @@ export async function runWriter(
       totals,
       templates,
       deps.taxRate,
+      deps.runId,
       { ...repairContext, findings, missing }
     );
     response = repairResponse;

@@ -5,12 +5,6 @@ import { fsObjectStore } from "../src/objectstore.js";
 import { ingestFiles } from "../src/ingest/ingest.js";
 import type { EmbedCfg } from "../src/ingest/embedder.js";
 
-const OBJECT_STORE_DIR = process.env.OBJECT_STORE_DIR ?? "./eval_objects";
-const EMBEDDING_BASE_URL = process.env.EMBEDDING_BASE_URL ?? "";
-const EMBEDDING_MODEL_ID = process.env.EMBEDDING_MODEL_ID ?? "";
-const EMBEDDING_DIMENSIONS = Number(process.env.EMBEDDING_DIMENSIONS ?? 1536);
-const DEEPINFRA_API_KEY = process.env.DEEPINFRA_API_KEY ?? "";
-
 export async function runMigrations(pool: pg.Pool): Promise<void> {
   const client = await pool.connect();
   try {
@@ -39,13 +33,17 @@ export async function cleanDatabase(pool: pg.Pool): Promise<void> {
 }
 
 export async function seedCorpus(pool: pg.Pool): Promise<void> {
-  const store = fsObjectStore(OBJECT_STORE_DIR);
+  // Read env at call time: this module loads before dotenv.config() runs in entry scripts.
+  const store = fsObjectStore(process.env.OBJECT_STORE_DIR ?? "./eval_objects");
   const embedCfg: EmbedCfg = {
-    baseUrl: EMBEDDING_BASE_URL,
-    modelId: EMBEDDING_MODEL_ID,
-    dimensions: EMBEDDING_DIMENSIONS,
-    apiKey: DEEPINFRA_API_KEY,
+    baseUrl: process.env.EMBEDDING_BASE_URL ?? "",
+    modelId: process.env.EMBEDDING_MODEL_ID ?? "",
+    dimensions: Number(process.env.EMBEDDING_DIMENSIONS ?? 1536),
+    apiKey: process.env.DEEPINFRA_API_KEY ?? "",
   };
+  if (embedCfg.baseUrl === "" || embedCfg.apiKey === "") {
+    throw new Error("seedCorpus requires EMBEDDING_BASE_URL and DEEPINFRA_API_KEY");
+  }
 
   const files = (await readdir("fixtures/synthetic_corpus")).filter((f) => {
     const lower = f.toLowerCase();

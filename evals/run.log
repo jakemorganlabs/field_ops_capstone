@@ -1,0 +1,34 @@
+◇ injected env (11) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+{"run_id":"021c6776-fc8c-4861-bb6f-2a481fa2c0a2","stage":"extraction","status":"ok","latency_ms":6022,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":369,"tokens_out":113}
+{"run_id":"021c6776-fc8c-4861-bb6f-2a481fa2c0a2","stage":"qualification","status":"proceed","latency_ms":0}
+{"event":"intent_queries","queries":{"similar_projects":"Install forty Cat6A network drops in an office building CA","manufacturer_specs":"Cat6A cable keystone jacks wall plates patch panel ports","code_references":"plenum rated cable firestop penetrations CA code"}}
+{"run_id":"021c6776-fc8c-4861-bb6f-2a481fa2c0a2","stage":"estimator","status":"ok","latency_ms":61427,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":4152,"tokens_out":1493}
+{"run_id":"021c6776-fc8c-4861-bb6f-2a481fa2c0a2","stage":"writer","status":"ok","latency_ms":12948,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":4385,"tokens_out":296}
+{"run_id":"021c6776-fc8c-4861-bb6f-2a481fa2c0a2","stage":"reviewer","status":"pass","latency_ms":2542,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":6824,"tokens_out":55}
+{"event":"case_complete","scenario":"answerable","run_id":"021c6776-fc8c-4861-bb6f-2a481fa2c0a2","status":"completed","errors":[]}
+{"run_id":"692987fe-33e4-4b1e-ad3c-77b886d04eba","stage":"extraction","status":"ok","latency_ms":3713,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":360,"tokens_out":109}
+{"run_id":"692987fe-33e4-4b1e-ad3c-77b886d04eba","stage":"qualification","status":"proceed","latency_ms":0}
+{"event":"intent_queries","queries":{"similar_projects":"Install radiation-hardened fiber optic trunk for orbital solar array telemetry FL","manufacturer_specs":"radiation-hardened fiber space-grade transceivers vacuum-rated connectors","code_references":"vacuum rated radiation hardened FL code"}}
+{"event":"case_complete","scenario":"answerable","run_id":"692987fe-33e4-4b1e-ad3c-77b886d04eba","status":"running","errors":["Missing rate for aerospace technician"]}
+{"run_id":"6b3604fd-9eb6-4728-a425-e5b95f06f9c2","stage":"extraction","status":"ok","latency_ms":2278,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":372,"tokens_out":116}
+{"run_id":"6b3604fd-9eb6-4728-a425-e5b95f06f9c2","stage":"qualification","status":"proceed","latency_ms":0}
+{"event":"intent_queries","queries":{"similar_projects":"Install 2,000 linear feet of 3/4 inch EMT conduit with boxes and fittings TX","manufacturer_specs":"EMT conduit EMT connectors couplings device boxes","code_references":"NEC Article 358 grounding required TX code"}}
+{"run_id":"6b3604fd-9eb6-4728-a425-e5b95f06f9c2","stage":"estimator","status":"ok","latency_ms":18554,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":1253,"tokens_out":949}
+{"run_id":"6b3604fd-9eb6-4728-a425-e5b95f06f9c2","stage":"writer","status":"ok","latency_ms":13594,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":2099,"tokens_out":451}
+{"event":"case_complete","scenario":"answerable","run_id":"6b3604fd-9eb6-4728-a425-e5b95f06f9c2","status":"running","errors":["schema validation failed after repair"]}
+{"run_id":"1d3dbef3-700c-4f9a-a7c4-baa2205d66d5","stage":"extraction","status":"ok","latency_ms":5595,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":377,"tokens_out":121}
+{"run_id":"1d3dbef3-700c-4f9a-a7c4-baa2205d66d5","stage":"qualification","status":"proceed","latency_ms":0}
+{"event":"intent_queries","queries":{"similar_projects":"Replace a 100 A service panel with a 200 A main panel and new feeders NY","manufacturer_specs":"200 A panel 2/0 AWG copper PVC conduit ground wire","code_references":"NEC Article 110 utility coordination NY code"}}
+{"run_id":"1d3dbef3-700c-4f9a-a7c4-baa2205d66d5","stage":"estimator","status":"ok","latency_ms":64614,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":1594,"tokens_out":981}
+{"run_id":"1d3dbef3-700c-4f9a-a7c4-baa2205d66d5","stage":"writer","status":"ok","latency_ms":18702,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":2148,"tokens_out":510}
+{"run_id":"1d3dbef3-700c-4f9a-a7c4-baa2205d66d5","stage":"reviewer","status":"pass","latency_ms":1420,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":3543,"tokens_out":55}
+{"event":"case_complete","scenario":"answerable","run_id":"1d3dbef3-700c-4f9a-a7c4-baa2205d66d5","status":"completed","errors":[]}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"extraction","status":"ok","latency_ms":5393,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":372,"tokens_out":116}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"qualification","status":"proceed","latency_ms":0}
+{"event":"intent_queries","queries":{"similar_projects":"Install six Level 2 EV charging stations in a commercial parking garage CO","manufacturer_specs":"Level 2 charging station 50 A breaker 6 AWG THHN bollard mount","code_references":"NEC Article 625 ADA accessible CO code"}}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"estimator","status":"ok","latency_ms":23773,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":1519,"tokens_out":870}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"writer","status":"ok","latency_ms":14688,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":1972,"tokens_out":487}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"reviewer","status":"revise","latency_ms":5816,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":3163,"tokens_out":250}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"writer","status":"ok","latency_ms":7056,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":2054,"tokens_out":257}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"reviewer","status":"revise","latency_ms":11838,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":3021,"tokens_out":602}
+{"run_id":"f29b3455-fed3-467c-a649-0e4a0cc72b66","stage":"estimator","status":"ok","latency_ms":49319,"model_id":"google/gemma-4-26B-A4B-it","tokens_in":2004,"tokens_out":872}
