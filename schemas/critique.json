@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "critique",
   "type": "object",
-  "additionalProperties": false,
-  "required": ["run_id", "decision", "issues"],
+  "additionalProperties": true,
+  "required": ["decision", "issues"],
   "properties": {
     "run_id": { "type": "string", "format": "uuid" },
     "round": { "type": "integer", "minimum": 0 },
