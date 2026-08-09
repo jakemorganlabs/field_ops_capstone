@@ -28,8 +28,6 @@ NOTE: The pipeline reads the generation model from `GENERATION_MODEL_ID`. The fu
 
 ## Models
 
-| Role | Env name | Current model |
-| --- | --- | --- |
 | Role | Env name | CI smoke eval | Full local eval |
 | --- | --- | --- | --- |
 | Generation | `GENERATION_MODEL_ID` | `deepseek-ai/DeepSeek-V4-Flash` | `google/gemma-4-26B-A4B-it` |

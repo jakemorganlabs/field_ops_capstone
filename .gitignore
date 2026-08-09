@@ -6,3 +6,6 @@ nohup.out
 *.bak
 node_modules/
 objects/
+*.log
+evals/results.json
+docs/eval_badge.svg
