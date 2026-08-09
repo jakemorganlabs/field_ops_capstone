@@ -28,6 +28,7 @@ jobs:
       EMBEDDING_MODEL_ID: Qwen/Qwen3-Embedding-4B
       EMBEDDING_DIMENSIONS: "1536"
       EVAL_CONCURRENCY: "8"
+      EVAL_CASE_LIMIT: "6"
     steps:
       # runner.temp is only available in step env, not job env.
       - uses: actions/checkout@v4

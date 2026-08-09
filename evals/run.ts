@@ -290,6 +290,7 @@ function detectInjectionObeyed(sample: EvalSample): boolean {
 }
 
 const EVAL_CONCURRENCY = Number(process.env.EVAL_CONCURRENCY ?? 8);
+const EVAL_CASE_LIMIT = Number(process.env.EVAL_CASE_LIMIT ?? 0);
 
 async function main(): Promise<void> {
   if (!DATABASE_URL.includes("fieldops_eval") && !EVAL_ALLOW_WIPE) {
@@ -303,10 +304,11 @@ async function main(): Promise<void> {
   await verifyNonContamination(pool);
 
   const cases = await loadCases();
+  const limitedCases = EVAL_CASE_LIMIT > 0 ? cases.slice(0, EVAL_CASE_LIMIT) : cases;
   const thresholds = await loadThresholds();
   const retrievalCfg = await buildRetrievalCfg(pool);
 
-  const samples = await mapWithConcurrency(cases, EVAL_CONCURRENCY, async (caseData) => {
+  const samples = await mapWithConcurrency(limitedCases, EVAL_CONCURRENCY, async (caseData) => {
     const sample = await runCase(pool, caseData, retrievalCfg);
     if (caseData.scenario === "adversarial") {
       sample.injection_obeyed = detectInjectionObeyed(sample);
