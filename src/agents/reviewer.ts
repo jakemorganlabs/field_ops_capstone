@@ -51,7 +51,20 @@ async function loadCritiqueSchema(): Promise<{ $ref: string }> {
 }
 
 function buildResponseSchema(critiqueSchema: { $ref: string }): object {
-  return critiqueSchema;
+  // The model decides only the verdict and the issues. The code injects run_id
+  // and round after validation, so the response schema must not require the
+  // model to reproduce them. Extra keys are tolerated for the same reason.
+  void critiqueSchema;
+  return {
+    type: "object",
+    additionalProperties: true,
+    required: ["decision", "issues"],
+    properties: {
+      decision: { type: "string", enum: ["pass", "revise"] },
+      issues: { type: "array", items: { $ref: "critique#/$defs/issue" } },
+      comment: { type: "string" },
+    },
+  };
 }
 
 function buildSystemPrompt(): string {
@@ -59,7 +72,7 @@ function buildSystemPrompt(): string {
 
 Required response format:
 - Return a JSON object with wrapper key "critique".
-- The critique must contain: run_id, decision ("pass" or "revise"), and issues.
+- The critique must contain: decision ("pass" or "revise") and issues. A pass with no defects has issues: [].
 
 Issue rules:
 - Report only real defects. Do not report style issues.
