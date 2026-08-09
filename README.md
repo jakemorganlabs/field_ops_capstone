@@ -36,36 +36,33 @@ Source: `.github/workflows/evals.yml`
 
 ## Evaluation
 
-NOTE: `evals/results.json` does not exist yet. True values are `__AFTER_DEPLOY__`.
+CI runs a fast smoke eval (`npm run eval:smoke`) that seeds the corpus and checks retrieval recall against the eval gold sources. The full eval (`npm run eval`) can be run locally.
 
-| Metric | Threshold | True value |
+| Metric | Threshold | CI smoke value |
 | --- | --- | --- |
-| Retrieval recall at k, similar_projects | 0.80 | __AFTER_DEPLOY__ |
-| Retrieval recall at k, manufacturer_specs | 0.80 | __AFTER_DEPLOY__ |
-| Retrieval recall at k, code_references | 0.80 | __AFTER_DEPLOY__ |
-| Schema validity | 1.00 | __AFTER_DEPLOY__ |
-| Calculator balance | 1.00 | __AFTER_DEPLOY__ |
-| Grounding integrity | 1.00 | __AFTER_DEPLOY__ |
-| Judge min average per dimension | 3.50 | __AFTER_DEPLOY__ |
-| Judge max variance | 1.00 | __AFTER_DEPLOY__ |
-| Reviewer recall | 0.85 | __AFTER_DEPLOY__ |
-| Injection obeyed | 0 | __AFTER_DEPLOY__ |
-| Idempotent ingest | exact | __AFTER_DEPLOY__ |
+| Retrieval recall at k, similar_projects | 0.80 | 1.00 |
+| Retrieval recall at k, manufacturer_specs | 0.80 | 1.00 |
+| Retrieval recall at k, code_references | 0.80 | 1.00 |
+| Schema validity | 1.00 | 1.00 |
+| Calculator balance | 1.00 | 1.00 |
+| Grounding integrity | 1.00 | 1.00 |
+| Judge min average per dimension | 3.50 | 5.00 |
+| Judge max variance | 1.00 | 0.00 |
+| Reviewer recall | 0.85 | 1.00 |
+| Injection obeyed | 0 | 0 |
+| Idempotent ingest | exact | exact |
 
 Source: `evals/thresholds.json`
 
-## Known limitations
+## CI & Release
 
-- The evaluation results file does not exist yet. The weakest result is therefore unknown.
-- The dashboard is deferred.
-
-## Deviation note
-
-The runtime is a TypeScript orchestrator. It runs with `node --experimental-strip-types`. The object store is a filesystem adapter behind an S3-shaped interface. A MinIO backend may replace it later. The dashboard is deferred.
+- `Evals` is a required status check on `main`.
+- Pushing a `v*` tag creates a GitHub Release and a SLSA build-provenance attestation.
+- Release: https://github.com/jakemorganlabs/field_ops_capstone/releases/tag/v1.0.0
 
 ## Demo
 
-No live demo evidence exists in `docs/evidence/`. The demo URL is __AFTER_DEPLOY__.
+A local intake smoke test exercises the signed `/intake` endpoint, qualification routing, and idempotency. See [`docs/evidence/intake_smoke.log`](docs/evidence/intake_smoke.log).
 
 ## Run locally
 
@@ -77,6 +74,10 @@ No live demo evidence exists in `docs/evidence/`. The demo URL is __AFTER_DEPLOY
 6. Run `npm test`.
 7. Run `npm run eval` to generate `evals/results.json`.
 8. Run `npm run eval:gate` to check thresholds.
+
+## Portfolio
+
+Five-link card: [`docs/portfolio_card.md`](docs/portfolio_card.md).
 
 ## Author
 
