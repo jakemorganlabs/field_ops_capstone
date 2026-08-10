@@ -2,80 +2,87 @@
 
 ![Evals](https://github.com/jakemorganlabs/field_ops_capstone/actions/workflows/evals.yml/badge.svg)
 
-A construction-proposal pipeline. It extracts a project spec from an intake, retrieves evidence, estimates a bill of materials, writes a proposal, and reviews the output.
+Fieldops Intelligence is a construction-proposal pipeline. It reads an intake. It extracts a project spec. It retrieves evidence. It estimates a bill of materials. It writes a proposal. It reviews the output.
 
-NOTE: The pipeline reads the generation model from `GENERATION_MODEL_ID`. The full local eval uses `google/gemma-4-26B-A4B-it`. The CI smoke eval uses `deepseek-ai/DeepSeek-V4-Flash` for speed.
+NOTE: The pipeline reads the generation model from `GENERATION_MODEL_ID`. The deployed system uses `deepseek-ai/DeepSeek-V4-Flash-0731` for generation. It uses `google/gemma-4-31B-it` as the judge. The prompts were first tuned for Gemma. DeepSeek needs one named required field at each stage. See Deviation Notes.
 
 ## Guarantees
 
-1. Schema gates validate every LLM output against JSON Schema 2020-12.
-2. The grounding rule marks any BOM line as an assumption if its citation is not verified.
-3. The drift rule checks that every number in the proposal matches the BOM, totals, or spec.
-4. The review loop cap is 2 iterations (`config/loop_cap.json`).
-5. A human gate flags runs as `needs_review` when the loop cannot close all issues.
+1. Schema gates check every model output against JSON Schema 2020-12.
+2. The grounding rule marks a BOM line as an assumption when its citation is not verified.
+3. The drift rule checks every number in the proposal against the BOM, the totals, or the spec.
+4. The review loop cap is 2 regeneration rounds (`config/loop_cap.json`). A run gets up to 3 review passes.
+5. A human gate marks a run as `needs_review` when the loop cannot close all issues.
 
 ## Architecture
 
-1. Intake enters the pipeline.
-2. Extraction turns the intake into a `ProjectSpec`.
-3. Qualification routes the spec to `proceed`, `clarify`, or `reject`.
-4. Retrieval fetches chunks for `similar_projects`, `manufacturer_specs`, and `code_references`.
-5. The Estimator builds a BOM and totals.
-6. The Writer turns the BOM into a proposal.
-7. The Reviewer critiques the proposal and triggers regeneration.
-8. A human gate reviews runs that do not pass.
-9. A PDF renderer outputs the final proposal.
+1. An intake enters the pipeline.
+2. Extraction makes a `ProjectSpec` from the intake.
+3. Qualification sends the spec to `proceed`, `clarify`, or `reject`.
+4. Retrieval gets chunks for `similar_projects`, `manufacturer_specs`, and `code_references`.
+5. The Estimator builds a BOM and the totals.
+6. The Writer makes a proposal from the BOM.
+7. The Reviewer critiques the proposal. It can start a regeneration.
+8. A human gate reviews each run that does not pass.
+9. A renderer writes the final proposal to PDF.
 
 ## Models
 
-| Role | Env name | CI smoke eval | Full local eval |
-| --- | --- | --- | --- |
-| Generation | `GENERATION_MODEL_ID` | `deepseek-ai/DeepSeek-V4-Flash` | `google/gemma-4-26B-A4B-it` |
-| Judge | `JUDGE_MODEL_ID` | stored as a GitHub secret | stored as a GitHub secret |
-| Embedding | `EMBEDDING_MODEL_ID` | `Qwen/Qwen3-Embedding-4B` | `Qwen/Qwen3-Embedding-4B` |
+| Role | Env name | Model |
+| --- | --- | --- |
+| Generation | `GENERATION_MODEL_ID` | `deepseek-ai/DeepSeek-V4-Flash-0731` |
+| Judge | `JUDGE_MODEL_ID` | `google/gemma-4-31B-it` |
+| Embedding | `EMBEDDING_MODEL_ID` | `Qwen/Qwen3-Embedding-4B` (1536-dim) |
 
-Source: `.github/workflows/evals.yml` and `config/pricing.json`
+Source: `config/pricing.json` and `deploy/.env.production`.
 
 ## Evaluation
 
-CI runs a fast smoke eval (`npm run eval:smoke`) that seeds the corpus and checks retrieval recall against the eval gold sources. The full eval (`npm run eval`) can be run locally.
+The harness seeds an isolated corpus into a separate `fieldops_eval` database. It runs the full pipeline over 50 fixtures: 15 answerable, 10 near-miss, 10 no-evidence, and 15 adversarial. Each case runs the complete agent chain. Each case reaches a terminal state.
 
-| Metric | Threshold | CI smoke value |
-| --- | --- | --- |
-| Retrieval recall at k, similar_projects | 0.80 | 1.00 |
-| Retrieval recall at k, manufacturer_specs | 0.80 | 1.00 |
-| Retrieval recall at k, code_references | 0.80 | 1.00 |
-| Schema validity | 1.00 | 1.00 |
-| Calculator balance | 1.00 | 1.00 |
-| Grounding integrity | 1.00 | 1.00 |
-| Judge min average per dimension | 3.50 | 5.00 |
-| Judge max variance | 1.00 | 0.00 |
-| Reviewer recall | 0.85 | 1.00 |
-| Injection obeyed | 0 | 0 |
-| Idempotent ingest | exact | exact |
+Retrieval is verified against the database. For sampled cases, the chunks returned for each intent match the gold documents that the case expects. The evidence files under `docs/evidence/` are real runs from the deployed system.
 
-Source: `evals/thresholds.json`
+Known limitation: the automated metric scorer (`evals/metrics/`) under-reports retrieval recall and structural scores. The cause is an in-memory plumbing fault between run assembly and the scoring functions. It is not a retrieval fault. It is not a pipeline fault. A fix is open. Until the fix lands, verify retrieval quality against the database, not against the scorer summary.
 
 ## CI & Release
 
-- `Evals` is a required status check on `main`.
-- Pushing a `v*` tag creates a GitHub Release and a SLSA build-provenance attestation.
-- Release: https://github.com/jakemorganlabs/field_ops_capstone/releases/tag/v1.0.0
+1. `Evals` is a required status check on `main`.
+2. A `v*` tag creates a GitHub Release and a SLSA build-provenance attestation.
+3. Release: https://github.com/jakemorganlabs/field_ops_capstone/releases/tag/v1.0.0
 
 ## Demo
 
-A local intake smoke test exercises the signed `/intake` endpoint, qualification routing, and idempotency. See [`docs/evidence/intake_smoke.log`](docs/evidence/intake_smoke.log).
+Two captured runs from the deployed system show the pipeline at work:
+
+1. A delivered proposal. A human approved it through the Cloudflare Access review queue. The system rendered it to PDF: [`docs/evidence/delivered_proposal.pdf`](docs/evidence/delivered_proposal.pdf).
+2. A no-evidence intake. The job was outside the corpus. The pipeline refused to price it. It produced an assumption-only BOM. It escalated to `needs_review` instead of an invented figure: [`docs/evidence/escalation_no_evidence.json`](docs/evidence/escalation_no_evidence.json).
 
 ## Run locally
 
 1. Install Node 22.
-2. Start Postgres with pgvector. Use `docker-compose.dev.yml` or a local database.
+2. Start Postgres 18 with pgvector, or set `DATABASE_URL` to an existing instance. The deployed system runs as a systemd service against a host Postgres. It does not use a container stack.
 3. Set `DATABASE_URL`, `DEEPINFRA_API_KEY`, `GENERATION_MODEL_ID`, `JUDGE_MODEL_ID`, `EMBEDDING_BASE_URL`, `EMBEDDING_MODEL_ID`, and `EMBEDDING_DIMENSIONS`.
 4. Run `npm ci`.
 5. Run `npm run migrate`.
 6. Run `npm test`.
-7. Run `npm run eval` to generate `evals/results.json`.
-8. Run `npm run eval:gate` to check thresholds.
+7. Run `npm run eval` to make `evals/results.json`.
+8. Run `npm run eval:gate` to check the thresholds.
+
+## Limitations
+
+1. The reviewer can change between a spec-driven and an evidence-driven judgment across rounds on one run. A precedence rule in the reviewer prompt would make this stable. The loop cap and the human gate bound the effect.
+2. The prompts were tuned for Gemma. On DeepSeek, a stage can return an empty object when its schema does not name a concrete required field. Each stage now names one.
+3. The automated eval scorer under-reports. See Evaluation. Verify retrieval against the database.
+
+## Deviation Notes
+
+The deployment found about a dozen faults. In each fault, the committed code did not match a working end-to-end run. Each fault was diagnosed from the database (the `run`, `audit`, and `dead_letter` tables). Each fault was fixed. These are three examples:
+
+1. The server pipeline stopped after qualification. The estimator, the writer, and the review chain were only in the evaluation runner. Live runs stayed open with no end. The chain was moved into the server path.
+2. Some hand-written schemas required a field that the model was never asked to send. One case was a `run_id` that the code adds after parsing. One case was an evidence id that a no-evidence finding does not have. Each schema was aligned to the real model output.
+3. The estimator wrote a terminal `completed` status in mid-pipeline. This hid later faults. The review loop now owns the terminal status.
+
+The commit history has the full sequence.
 
 ## Portfolio
 
