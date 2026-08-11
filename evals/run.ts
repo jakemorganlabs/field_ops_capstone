@@ -245,10 +245,7 @@ async function runCase(pool: pg.Pool, caseData: EvalCase): Promise<EvalSample> {
         };
       }
 
-      const retrievalSets = (normalizeJson(row.retrieval_sets) ?? {}) as Record
-        string,
-        { chunk_id: string; score: number }[]
-      >;
+      const retrievalSets = (normalizeJson(row.retrieval_sets) ?? {}) as Record<string, { chunk_id: string; score: number }[]>;
       const ids = new Set<string>();
       for (const entries of Object.values(retrievalSets)) {
         for (const entry of entries ?? []) ids.add(entry.chunk_id);
