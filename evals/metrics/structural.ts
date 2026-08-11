@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { Decimal } from "decimal.js";
 import type { EvalSample } from "./types.js";
+import { producedArtifacts, coverage } from "./eligibility.js";
 
 const ajv = new Ajv2020({ strict: false });
 addFormats(ajv);
@@ -30,8 +31,23 @@ export interface StructuralMetrics {
   schema_validity: number;
   calculator_balance: number;
   grounding_integrity: number;
+  scored: number;
+  eligible: number;
+  coverage: number;
+  schema_failures: Array<{ run_id: string; artifact: string; errors: string }>;
 }
 
+/**
+ * Structural scores are computed over the cases that produced artifacts on the
+ * proceed path. Cases that correctly routed to clarify or reject have no bill
+ * of materials and no proposal by design, so including them in the denominator
+ * caps every structural score below 1.0 and makes the gate unreachable.
+ *
+ * coverage guards the scoped denominator: it is the fraction of cases the
+ * fixtures expect to produce artifacts that actually did. If the pipeline
+ * regresses and stops producing proposals, coverage falls and the gate fails,
+ * so the narrower denominator cannot mask a failure.
+ */
 export async function scoreStructural(samples: EvalSample[]): Promise<StructuralMetrics> {
   await loadSchemas();
   const validateSpec = ajv.compile(specSchema!);
@@ -42,22 +58,30 @@ export async function scoreStructural(samples: EvalSample[]): Promise<Structural
   let balanceOk = 0;
   let groundingOk = 0;
   let total = 0;
+  const schema_failures: Array<{ run_id: string; artifact: string; errors: string }> = [];
 
   for (const sample of samples) {
-    if (sample.errors.length > 0) continue;
+    if (!producedArtifacts(sample)) continue;
     total += 1;
 
     const specOk = sample.spec ? validateSpec(sample.spec) : false;
+    if (!specOk) {
+      schema_failures.push({ run_id: sample.run_id, artifact: "spec", errors: ajv.errorsText(validateSpec.errors) });
+    }
     const bomOk = sample.bom ? validateBom(sample.bom) : false;
+    if (!bomOk) {
+      schema_failures.push({ run_id: sample.run_id, artifact: "bom", errors: ajv.errorsText(validateBom.errors) });
+    }
     const proposalOk = sample.proposal ? validateProposal(sample.proposal) : false;
+    if (!proposalOk) {
+      schema_failures.push({ run_id: sample.run_id, artifact: "proposal", errors: ajv.errorsText(validateProposal.errors) });
+    }
     if (specOk && bomOk && proposalOk) {
       schemaOk += 1;
     }
 
-    if (sample.bom && sample.totals) {
-      if (await checkBalance(sample.bom, sample.totals)) {
-        balanceOk += 1;
-      }
+    if (sample.bom && sample.totals && (await checkBalance(sample.bom, sample.totals))) {
+      balanceOk += 1;
     }
 
     if (sample.bom && checkGrounding(sample.bom)) {
@@ -65,10 +89,16 @@ export async function scoreStructural(samples: EvalSample[]): Promise<Structural
     }
   }
 
+  const cov = coverage(samples);
+
   return {
-    schema_validity: total === 0 ? 1 : schemaOk / total,
-    calculator_balance: total === 0 ? 1 : balanceOk / total,
-    grounding_integrity: total === 0 ? 1 : groundingOk / total,
+    schema_validity: total === 0 ? 0 : schemaOk / total,
+    calculator_balance: total === 0 ? 0 : balanceOk / total,
+    grounding_integrity: total === 0 ? 0 : groundingOk / total,
+    scored: total,
+    eligible: cov.eligible,
+    coverage: cov.coverage,
+    schema_failures: schema_failures.slice(0, 10),
   };
 }
 

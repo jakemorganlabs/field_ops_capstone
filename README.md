@@ -42,7 +42,9 @@ The harness seeds an isolated corpus into a separate `fieldops_eval` database. I
 
 Retrieval is verified against the database. For sampled cases, the chunks returned for each intent match the gold documents that the case expects. The evidence files under `docs/evidence/` are real runs from the deployed system.
 
-Known limitation: the automated metric scorer (`evals/metrics/`) under-reports retrieval recall and structural scores. The cause is an in-memory plumbing fault between run assembly and the scoring functions. It is not a retrieval fault. It is not a pipeline fault. A fix is open. Until the fix lands, verify retrieval quality against the database, not against the scorer summary.
+The metric scorer is corrected. After the pipeline ends, the harness reads each finished case back from the database. It scores each metric only against the cases that can show that metric. A clarify case has no bill of materials and no proposal. So it does not count against the structural scores. Each scorer reports the number of cases it scored. A count of zero fails the gate. The judge schema accepts extra keys, so the semantic scorer records the judge scores. The injection check reads the computed total of an adversarial run, not the proposal text. The command `npm run eval` writes the current figures to `evals/results.json`.
+
+The eval run scored five metrics at 1.0: schema validity, calculator balance, grounding integrity, correct refusal, and idempotent ingest. Retrieval passed for `similar_projects`. Three metrics need more work. The Roadmap section gives the details.
 
 ## CI & Release
 
@@ -72,7 +74,14 @@ Two captured runs from the deployed system show the pipeline at work:
 
 1. The reviewer can change between a spec-driven and an evidence-driven judgment across rounds on one run. A precedence rule in the reviewer prompt would make this stable. The loop cap and the human gate bound the effect.
 2. The prompts were tuned for Gemma. On DeepSeek, a stage can return an empty object when its schema does not name a concrete required field. Each stage now names one.
-3. The automated eval scorer under-reports. See Evaluation. Verify retrieval against the database.
+
+## Roadmap
+
+Three metrics need more work. The eval run measured each one.
+
+1. Reviewer calibration. The reviewer recall was 0.37. The reviewer marks revise on answerable cases that the fixtures expect it to pass. It then sends these cases to needs_review. A precedence rule in the reviewer prompt must make the reviewer mark revise only for a defect against the spec or the evidence. The same rule corrects the reviewer change in Limitation 1.
+2. Qualifier calibration. The route accuracy was 0.88. Five near-miss cases continued. The fixtures expect the qualifier to return these cases for more data. The clarify threshold and the field rules need adjustment for the borderline cases.
+3. Retrieval on two intents. The recall was 0.90 for `similar_projects`. The recall was 0.48 for `manufacturer_specs`. The recall was 0.52 for `code_references`. Each case has one dedicated proposal document, so `similar_projects` is strong. The corpus has only a few shared specification documents and code documents. So the other two intents use generic references. More documents for each topic must raise the recall.
 
 ## Deviation Notes
 

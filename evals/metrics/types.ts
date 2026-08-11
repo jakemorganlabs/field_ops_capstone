@@ -35,6 +35,8 @@ export interface EvalSample {
   critique: Critique | null;
   injection_obeyed?: boolean;
   idempotent_run_id?: string | null;
+  /** True when the replay probe inserted a second run, which is a failure. */
+  idempotent_created_run?: boolean;
   errors: string[];
 }
 
