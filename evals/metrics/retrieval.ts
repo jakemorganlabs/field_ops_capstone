@@ -1,8 +1,11 @@
 import type { EvalSample } from "./types.js";
+import { expectsProposal } from "./eligibility.js";
 
 export interface RetrievalMetric {
   intent: string;
   recall: number;
+  scored: number;
+  eligible: number;
   passed: boolean;
 }
 
@@ -20,27 +23,42 @@ function sourceFromChunk(chunk: { source?: string; chunk_id?: string }): string 
   return raw.replace(/^eval_/, "");
 }
 
+/**
+ * Recall is scored only on cases the fixture expects to reach retrieval.
+ * A case that correctly routes to clarify never calls retrieveIntent, so an
+ * empty retrieval set there is correct behaviour rather than a recall miss.
+ * eligible and scored are reported so a shrinking denominator is visible.
+ */
 export function scoreRetrieval(samples: EvalSample[], thresholds: Record<string, number>): RetrievalMetric[] {
   const intents = ["similar_projects", "manufacturer_specs", "code_references"];
   const metrics: RetrievalMetric[] = [];
 
   for (const intent of intents) {
-    let total = 0;
-    let passed = 0;
+    let eligible = 0;
+    let scored = 0;
+    let passedCases = 0;
     for (const sample of samples) {
       const gold = sample.case.gold_chunks_per_intent?.[intent];
       if (!gold || gold.length === 0) continue;
-      total += 1;
+      eligible += 1;
+      if (!expectsProposal(sample)) continue;
+      scored += 1;
       const retrieved = sample.retrieved[intent] ?? [];
       const retrievedSources = new Set(retrieved.map((c) => sourceFromChunk(c)));
       const hits = gold.filter((g) => retrievedSources.has(g)).length;
       const recall = hits / gold.length;
       if (recall >= (thresholds[intent] ?? 0.8)) {
-        passed += 1;
+        passedCases += 1;
       }
     }
-    const recall = total === 0 ? 1 : passed / total;
-    metrics.push({ intent, recall, passed: recall >= (thresholds[intent] ?? 0.8) });
+    const recall = scored === 0 ? 0 : passedCases / scored;
+    metrics.push({
+      intent,
+      recall,
+      scored,
+      eligible,
+      passed: scored > 0 && recall >= (thresholds[intent] ?? 0.8),
+    });
   }
 
   return metrics;

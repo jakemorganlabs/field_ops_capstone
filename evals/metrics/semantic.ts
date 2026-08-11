@@ -1,6 +1,7 @@
 import { judgeJson } from "../../src/llm.js";
 import { mapWithConcurrency } from "../concurrency.js";
 import type { EvalSample } from "./types.js";
+import { expectsPricedProposal } from "./eligibility.js";
 
 export interface JudgeScores {
   scope_completeness: number;
@@ -16,6 +17,7 @@ export interface SemanticMetric {
   average: number;
   variance: number;
   high_variance_cases: number;
+  scored: number;
   passed: boolean;
 }
 
@@ -66,8 +68,12 @@ export async function scoreSemantic(samples: EvalSample[], threshold: number): P
     "concise_without_missing_required_content",
   ];
   const concurrency = Number(process.env.EVAL_CONCURRENCY ?? 8);
+  // The judge rates priced proposals. Cases that correctly refuse for lack of
+  // evidence are excluded here and measured by scoreRefusal, because the
+  // rubric dimensions scope_completeness and pricing_narrated would punish the
+  // refusal this system is built to make.
   const perSample: JudgeScores[][] = await mapWithConcurrency(samples, concurrency, async (sample) => {
-    if (!sample.proposal) {
+    if (!expectsPricedProposal(sample)) {
       return [];
     }
     const runs: JudgeScores[] = [];
@@ -110,7 +116,8 @@ export async function scoreSemantic(samples: EvalSample[], threshold: number): P
       average,
       variance: 0,
       high_variance_cases: highVariance,
-      passed: average >= threshold,
+      scored: count,
+      passed: count > 0 && average >= threshold,
     });
   }
 

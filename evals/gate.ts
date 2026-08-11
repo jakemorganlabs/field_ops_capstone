@@ -10,19 +10,30 @@ interface Thresholds {
   reviewer_recall: number;
   injection_obeyed: number;
   idempotent_ingest: string;
+  route_accuracy: number;
+  structural_coverage: number;
+  correct_refusal: number;
 }
 
 interface ResultsFile {
   commit_hash: string;
   timestamp: string;
   counts: Record<string, number>;
-  retrieval: Array<{ intent: string; recall: number; passed: boolean }>;
-  structural: { schema_validity: number; calculator_balance: number; grounding_integrity: number };
-  semantic: Array<{ dimension: string; average: number; variance: number; high_variance_cases: number; passed: boolean }>;
-  reviewer: { recall: number; passed: boolean };
-  escalation: { route_accuracy: number; passed: boolean };
+  retrieval: Array<{ intent: string; recall: number; scored: number; eligible: number; passed: boolean }>;
+  structural: {
+    schema_validity: number;
+    calculator_balance: number;
+    grounding_integrity: number;
+    scored: number;
+    eligible: number;
+    coverage: number;
+  };
+  semantic: Array<{ dimension: string; average: number; variance: number; high_variance_cases: number; scored: number; passed: boolean }>;
+  reviewer: { recall: number; scored: number; passed: boolean };
+  escalation: { route_accuracy: number; scored: number; passed: boolean };
   injection: { obeyed: number; passed: boolean };
-  ingest: { exact: number; passed: boolean };
+  ingest: { exact: number; scored: number; duplicates_created: number; passed: boolean };
+  refusal: { correct_refusal: number; scored: number; passed: boolean };
   samples: Array<{ scenario: string; run_id: string; status: string; route: string; errors: string[] }>;
 }
 
@@ -36,11 +47,23 @@ async function main(): Promise<void> {
 
   const failures: string[] = [];
 
+  // An empty denominator is a failure, not a pass. Every scoped metric reports
+  // how many cases it scored so a silently emptied denominator cannot slip a
+  // regression through the gate.
   for (const metric of results.retrieval) {
     const threshold = thresholds.recall_at_k[metric.intent] ?? 0.8;
-    if (metric.recall < threshold) {
-      failures.push(`retrieval ${metric.intent}: ${metric.recall.toFixed(2)} < ${threshold}`);
+    if (metric.scored === 0) {
+      failures.push(`retrieval ${metric.intent}: scored 0 cases of ${metric.eligible} eligible`);
+    } else if (metric.recall < threshold) {
+      failures.push(`retrieval ${metric.intent}: ${metric.recall.toFixed(2)} < ${threshold} (n=${metric.scored})`);
     }
+  }
+
+  if (results.structural.coverage < thresholds.structural_coverage) {
+    failures.push(
+      `structural_coverage: ${results.structural.coverage.toFixed(2)} < ${thresholds.structural_coverage} ` +
+        `(${results.structural.scored} of ${results.structural.eligible} proceed cases produced artifacts)`
+    );
   }
 
   if (results.structural.schema_validity < thresholds.schema_validity) {
@@ -60,7 +83,19 @@ async function main(): Promise<void> {
   }
 
   if (results.reviewer.recall < thresholds.reviewer_recall) {
-    failures.push(`reviewer_recall: ${results.reviewer.recall.toFixed(2)} < ${thresholds.reviewer_recall}`);
+    failures.push(`reviewer_recall: ${results.reviewer.recall.toFixed(2)} < ${thresholds.reviewer_recall} (n=${results.reviewer.scored})`);
+  }
+
+  if (results.escalation.route_accuracy < thresholds.route_accuracy) {
+    failures.push(
+      `route_accuracy: ${results.escalation.route_accuracy.toFixed(2)} < ${thresholds.route_accuracy} (n=${results.escalation.scored})`
+    );
+  }
+
+  if (results.refusal.correct_refusal < thresholds.correct_refusal) {
+    failures.push(
+      `correct_refusal: ${results.refusal.correct_refusal.toFixed(2)} < ${thresholds.correct_refusal} (n=${results.refusal.scored})`
+    );
   }
 
   if (!results.injection.passed) {
@@ -68,7 +103,10 @@ async function main(): Promise<void> {
   }
 
   if (!results.ingest.passed) {
-    failures.push(`idempotent_ingest: failed`);
+    failures.push(
+      `idempotent_ingest: exact ${results.ingest.exact.toFixed(2)}, ` +
+        `${results.ingest.duplicates_created} duplicate run(s) created (n=${results.ingest.scored})`
+    );
   }
 
   if (failures.length > 0) {
