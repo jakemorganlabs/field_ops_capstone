@@ -23,14 +23,13 @@ export interface SemanticMetric {
 
 const judgeSchema = {
   type: "object",
-  additionalProperties: false,
+  additionalProperties: true,
   required: [
     "scope_completeness",
     "hallucination",
     "assumptions_surfaced",
     "pricing_narrated",
     "concise_without_missing_required_content",
-    "excerpt",
   ],
   properties: {
     scope_completeness: { type: "number", minimum: 1, maximum: 5 },
@@ -84,7 +83,7 @@ export async function scoreSemantic(samples: EvalSample[], threshold: number): P
           user: buildJudgePrompt(sample),
           wrapperKey: "scores",
           schema: judgeSchema,
-          maxTokens: 1024,
+          maxTokens: 2048,
         });
         runs.push(result.value);
       } catch (err) {
