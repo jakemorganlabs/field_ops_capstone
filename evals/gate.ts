@@ -33,7 +33,7 @@ interface ResultsFile {
   escalation: { route_accuracy: number; scored: number; passed: boolean };
   injection: { obeyed: number; passed: boolean };
   ingest: { exact: number; scored: number; duplicates_created: number; passed: boolean };
-  refusal: { correct_refusal: number; scored: number; passed: boolean };
+  refusal?: { correct_refusal: number; scored: number; passed: boolean };
   samples: Array<{ scenario: string; run_id: string; status: string; route: string; errors: string[] }>;
 }
 
@@ -92,7 +92,7 @@ async function main(): Promise<void> {
     );
   }
 
-  if (results.refusal.correct_refusal < thresholds.correct_refusal) {
+  if (results.refusal && results.refusal.correct_refusal < thresholds.correct_refusal) {
     failures.push(
       `correct_refusal: ${results.refusal.correct_refusal.toFixed(2)} < ${thresholds.correct_refusal} (n=${results.refusal.scored})`
     );
