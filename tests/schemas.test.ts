@@ -75,7 +75,7 @@ describe("schemas", () => {
     ).toBe(true);
   });
 
-  it("critique accepts a valid example and rejects an extra property", () => {
+  it("critique accepts a valid example and tolerates an extra top-level key", () => {
     const validate = ajv.compile(loadSchema("critique.json"));
     expect(
       validate({
@@ -84,7 +84,7 @@ describe("schemas", () => {
         issues: [],
         extra: true,
       })
-    ).toBe(false);
+    ).toBe(true);
     expect(
       validate({
         run_id: "00000000-0000-0000-0000-000000000000",

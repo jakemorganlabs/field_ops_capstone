@@ -3,9 +3,9 @@ import pg from "pg";
 import { runPipeline } from "../src/pipeline.js";
 import { generateJson } from "../src/llm.js";
 
-vi.mock("../src/llm.js", () => ({
+vi.mock("../src/llm.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../src/llm.js")>()),
   generateJson: vi.fn(),
-  SchemaFailure: class extends Error {},
 }));
 
 const databaseUrl = process.env.DATABASE_URL;
