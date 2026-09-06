@@ -20,6 +20,19 @@ describe("calculator", () => {
     expect(materialSubtotal(lines)).toBe("15.97");
   });
 
+  it("laborTotal counts an assumption line with no configured rate as zero", () => {
+    const labor = [
+      { role: "electrician", hours: "10", rate_key: "elec" },
+      { role: "plumber", hours: "6", rate_key: "plumber", assumption: true },
+    ];
+    expect(laborTotal(labor, { elec: "75.00" })).toBe("750.00");
+  });
+
+  it("laborTotal still refuses to price a cited line with no configured rate", () => {
+    const labor = [{ role: "plumber", hours: "6", rate_key: "plumber", citation: { chunk_id: "c", snippet: "plumber: $90" } }];
+    expect(() => laborTotal(labor, { elec: "75.00" })).toThrow(/Missing rate for plumber/);
+  });
+
   it("laborTotal uses rate map", () => {
     const labor = [{ role: "electrician", hours: "10", rate_key: "elec" }];
     expect(laborTotal(labor, { elec: "75.00" })).toBe("750.00");

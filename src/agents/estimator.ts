@@ -31,6 +31,7 @@ export interface LaborLine {
   rate_key: string;
   citation?: Citation;
   assumption?: boolean;
+  note?: string;
 }
 
 export interface BillOfMaterials {
@@ -255,6 +256,25 @@ async function persistEstimate(
   );
 }
 
+/**
+ * A labor line whose rate_key is not in the configured rate map cannot be
+ * priced. The prompt asks the model to mark such roles as assumptions; when it
+ * does not, recast the line here instead of letting the calculator throw and
+ * fail the run (four of nine failed cases on the 2026-09-06 eval were
+ * "Missing rate for <role>").
+ */
+export function recastUnknownLaborRates(bom: BillOfMaterials, rateMap: Record<string, string>): string[] {
+  const recast: string[] = [];
+  for (const line of bom.labor ?? []) {
+    if (rateMap[line.rate_key] !== undefined) continue;
+    line.assumption = true;
+    line.citation = undefined;
+    line.note = `no configured labor rate for "${line.rate_key}"`;
+    recast.push(line.rate_key);
+  }
+  return recast;
+}
+
 function runGroundingGate(bom: BillOfMaterials, allChunks: Map<string, RetrievedChunk>): LineVerdict[] {
   const retrievedIds = new Set<string>(allChunks.keys());
   const textById = new Map<string, string>();
@@ -360,6 +380,10 @@ export async function runEstimator(
   }
 
   const bom = (response.value as { bom: BillOfMaterials }).bom;
+  const recastRates = recastUnknownLaborRates(bom, deps.rateMap);
+  if (recastRates.length > 0) {
+    console.log(JSON.stringify({ event: "labor_rate_recast", run_id: deps.runId, rate_keys: recastRates }));
+  }
   const verdicts = runGroundingGate(bom, allChunks);
   const totals = computeTotals(bom, deps.rateMap, deps.taxRate);
 

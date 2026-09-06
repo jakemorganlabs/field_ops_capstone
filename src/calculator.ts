@@ -31,6 +31,10 @@ export function laborTotal(labor: LaborLine[], rateMap: Record<string, string>):
   const total = labor.reduce((sum, line) => {
     const rate = rateMap[line.rate_key];
     if (rate === undefined) {
+      // An assumption line with no configured rate contributes nothing and
+      // surfaces in the proposal's assumptions list. A cited line must have a
+      // rate: a price for a role nobody configured is an invented figure.
+      if (line.assumption === true) return sum;
       throw new Error(`Missing rate for ${line.rate_key}`);
     }
     return sum.plus(new Decimal(extendedCost(line.hours, rate)));
