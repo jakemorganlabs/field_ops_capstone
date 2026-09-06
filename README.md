@@ -1,6 +1,6 @@
 # Fieldops Intelligence
 
-![Evals](https://github.com/jakemorganlabs/field_ops_capstone/actions/workflows/evals.yml/badge.svg)
+![Evals (smoke)](https://github.com/jakemorganlabs/field_ops_capstone/actions/workflows/evals.yml/badge.svg)
 
 Fieldops Intelligence is a construction-proposal pipeline. It reads an intake. It extracts a project spec. It retrieves evidence. It estimates a bill of materials. It writes a proposal. It reviews the output.
 
@@ -46,9 +46,11 @@ The metric scorer is corrected. After the pipeline ends, the harness reads each 
 
 The eval run scored five metrics at 1.0: schema validity, calculator balance, grounding integrity, correct refusal, and idempotent ingest. Retrieval passed for `similar_projects`. Three metrics need more work. The Roadmap section gives the details.
 
+The badge at the top of this page is the `Evals (smoke)` workflow. On each push it seeds the eval corpus and checks retrieval recall for one answerable case. It does not run the agent chain. So it measures none of the structural, semantic, reviewer, escalation, injection, ingest, or refusal metrics, and its results file lists those sections as unmeasured. A green badge means retrieval on one case cleared the floor and nothing more. The full figures come only from `npm run eval`.
+
 ## CI & Release
 
-1. `Evals` is a required status check on `main`.
+1. `Evals (smoke)` is a required status check on `main`. It checks retrieval recall on one case. It does not stand in for the full eval.
 2. A `v*` tag creates a GitHub Release and a SLSA build-provenance attestation.
 3. Release: https://github.com/jakemorganlabs/field_ops_capstone/releases/tag/v1.0.0
 

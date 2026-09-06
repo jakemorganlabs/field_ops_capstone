@@ -1,4 +1,4 @@
-name: Evals
+name: Evals (smoke)
 
 on:
   push:
@@ -30,6 +30,9 @@ jobs:
       EVAL_CONCURRENCY: "1"
       EVAL_CASE_LIMIT: "2"
       SKIP_DRIFT_VALIDATION: "1"
+      # The smoke run measures retrieval for one case. It writes here so the gate
+      # and badge read the same file and never touch the full-run evals/results.json.
+      EVAL_RESULTS_PATH: evals/smoke_results.json
     steps:
       # runner.temp is only available in step env, not job env.
       - uses: actions/checkout@v4

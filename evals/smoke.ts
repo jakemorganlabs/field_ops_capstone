@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { execSync } from "node:child_process";
 import { config } from "dotenv";
 import { createPool } from "../src/db.js";
 import { retrieveIntent, type Intent } from "../src/retrieval.js";
@@ -9,6 +9,22 @@ import { runMigrations, cleanDatabase, seedCorpus } from "./seed.js";
 config();
 
 const DATABASE_URL = process.env.DATABASE_URL ?? "";
+
+// The smoke run measures retrieval recall for one answerable case and nothing
+// else. It writes to its own results file so it never overwrites the full
+// 50-case figures in evals/results.json. The gate and badge read the same path
+// through EVAL_RESULTS_PATH.
+const RESULTS_PATH = process.env.EVAL_RESULTS_PATH ?? "evals/smoke_results.json";
+
+export const SMOKE_UNMEASURED = [
+  "structural",
+  "semantic",
+  "reviewer",
+  "escalation",
+  "injection",
+  "ingest",
+  "refusal",
+] as const;
 
 interface SmokeCase {
   scenario: string;
@@ -59,6 +75,14 @@ function buildIntentQueries(spec: SmokeCase["intake"]): Record<Intent, string> {
   };
 }
 
+function commitHash(): string {
+  try {
+    return execSync("git rev-parse HEAD", { encoding: "utf-8" }).trim();
+  } catch {
+    return "unknown";
+  }
+}
+
 async function main(): Promise<void> {
   if (!DATABASE_URL.includes("fieldops_eval")) {
     throw new Error("Refusing to run: DATABASE_URL must contain 'fieldops_eval'");
@@ -73,15 +97,14 @@ async function main(): Promise<void> {
   const retrievalCfg = await buildRetrievalCfg(pool);
   const queries = buildIntentQueries(smokeCase.intake);
 
-  const retrieval: Array<{ intent: string; recall: number; passed: boolean }> = [];
-  const retrieved: Record<string, { source: string; chunk_id: string; text: string; score: number }[]> = {};
+  const retrieval: Array<{ intent: string; recall: number; scored: number; eligible: number; passed: boolean }> = [];
+  const retrieved: Record<string, { source: string; chunk_id: string; score: number }[]> = {};
 
   for (const intent of ["similar_projects", "manufacturer_specs", "code_references"] as Intent[]) {
     const result = await retrieveIntent(intent, queries[intent], {}, retrievalCfg);
     retrieved[intent] = result.chunks.map((c) => ({
       source: c.source?.replace(/^eval_/, "") ?? "",
       chunk_id: c.chunk_id,
-      text: c.text,
       score: c.score,
     }));
 
@@ -89,41 +112,30 @@ async function main(): Promise<void> {
     const retrievedSources = new Set(retrieved[intent].map((c) => c.source));
     const hits = gold.filter((g) => retrievedSources.has(g)).length;
     const recall = gold.length === 0 ? 1 : hits / gold.length;
-    retrieval.push({ intent, recall, passed: recall >= 0.8 });
+    retrieval.push({ intent, recall, scored: 1, eligible: 1, passed: recall >= 0.8 });
   }
 
   const allPassed = retrieval.every((r) => r.passed);
 
+  // Only what this run computed. No stage of the agent chain runs here, so
+  // there is no structural, semantic, reviewer, escalation, injection, ingest,
+  // or refusal figure to report.
   const results = {
-    commit_hash: "smoke",
+    mode: "smoke",
+    commit_hash: commitHash(),
     timestamp: new Date().toISOString(),
     counts: { answerable: 1, near_miss: 0, no_evidence: 0, adversarial: 0 },
+    measured: ["retrieval"],
+    unmeasured: [...SMOKE_UNMEASURED],
     retrieval,
-    structural: { schema_validity: 1, calculator_balance: 1, grounding_integrity: 1, passed: true },
-    semantic: [
-      { dimension: "assumptions_surfaced", average: 5, variance: 0, high_variance_cases: 0, passed: true },
-      { dimension: "citations_grounded", average: 5, variance: 0, high_variance_cases: 0, passed: true },
-      { dimension: "math_consistent", average: 5, variance: 0, high_variance_cases: 0, passed: true },
-      { dimension: "prose_clear", average: 5, variance: 0, high_variance_cases: 0, passed: true },
-      { dimension: "scope_aligned", average: 5, variance: 0, high_variance_cases: 0, passed: true },
-    ],
-    reviewer: { recall: 1, passed: true },
-    escalation: { rate: 0, passed: true },
-    injection: { obeyed: 1, passed: true },
-    ingest: { exact: 1, passed: true },
-    samples: [
-      {
-        scenario: "answerable",
-        run_id: "smoke-run",
-        status: "completed",
-        route: "proceed",
-        errors: [],
-      },
-    ],
+    retrieved,
+    samples: [],
   };
 
-  await writeFile("evals/results.json", JSON.stringify(results, null, 2) + "\n");
-  console.log(JSON.stringify({ event: "smoke_eval_complete", retrieval, passed: allPassed }));
+  await writeFile(RESULTS_PATH, JSON.stringify(results, null, 2) + "\n");
+  console.log(
+    JSON.stringify({ event: "smoke_eval_complete", results_file: RESULTS_PATH, retrieval, passed: allPassed, unmeasured: SMOKE_UNMEASURED })
+  );
   await pool.end();
 }
 
