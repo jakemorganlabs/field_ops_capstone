@@ -76,14 +76,14 @@ Two captured runs from the deployed system show the pipeline at work:
 
 ## Limitations
 
-1. The reviewer can change between a spec-driven and an evidence-driven judgment across rounds on one run. A precedence rule in the reviewer prompt would make this stable. The loop cap and the human gate bound the effect.
+1. The reviewer can change between a spec-driven and an evidence-driven judgment across rounds on one run. The reviewer prompt now carries a precedence rule, and the code enforces its core: a revise verdict must name at least one error-severity defect against the spec or the evidence, or it becomes a pass with the advisory issues kept on the critique. The loop cap and the human gate still bound the effect.
 2. The prompts were tuned for Gemma. On DeepSeek, a stage can return an empty object when its schema does not name a concrete required field. Each stage now names one.
 
 ## Roadmap
 
 Three metrics need more work. The eval run measured each one.
 
-1. Reviewer calibration. The reviewer recall was 0.37. The reviewer marks revise on answerable cases that the fixtures expect it to pass. It then sends these cases to needs_review. A precedence rule in the reviewer prompt must make the reviewer mark revise only for a defect against the spec or the evidence. The same rule corrects the reviewer change in Limitation 1.
+1. Reviewer calibration. The last full run measured reviewer recall at 0.37: 37 of 38 scored cases ended needs_review on a revise verdict, and the live critiques show why. The reviewer raised warnings about ancillary items, tax presentation, validity dates, and missing permits, then marked revise on them. The prompt now states a precedence rule: revise only for an error-severity defect against the spec or the evidence; assumptions are correct handling of missing evidence, not defects; everything else is advice. `applyDecisionPrecedence` in `src/agents/reviewer.ts` enforces the core of the rule in code and logs each downgrade. The full eval has not been re-run since this change.
 2. Qualifier calibration. The route accuracy was 0.88. Five near-miss cases continued. The fixtures expect the qualifier to return these cases for more data. The clarify threshold and the field rules need adjustment for the borderline cases.
 3. Retrieval on two intents. The last full eval run measured 0.90 for `similar_projects`, 0.48 for `manufacturer_specs`, and 0.52 for `code_references`. The cause was the corpus. Each case had one dedicated proposal document, but 14 of the 15 topics shared one generic code reference and had no specification document at all, so the gold source for those two intents was a document about Cat6A cabling in California. The corpus now carries a manufacturer specification and a code reference for every topic (58 documents, up from 30), and the fixtures point at them. The retrieval probe (`npm run eval:retrieval`, described above) measures 0.91, 0.97, and 0.94 on that corpus. The remaining misses are the adversarial cases, where the injected text pollutes the query, and two near-miss cases whose single-constraint queries fall under the similarity floor. The full eval has not been re-run since this change, so `evals/results.json` still carries the old figures until it is.
 
