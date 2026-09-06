@@ -127,7 +127,7 @@ Required response format:
 BOM rules:
 - Every quantity, unit_cost, and hours field must be a string, not a number. Example: "40", "8.50", "1.5".
 - Every BOM line must have item, quantity, and unit_cost.
-- Output one separate line for every distinct material item in the evidence. Do not group multiple items into one line.
+- Output one line per distinct material item the project needs. Do not group different items into one line. When two evidence chunks price the same item (a proposal and a spec sheet, or a per-foot and a per-reel price), choose one source, cite it once, and never list the item twice.
 - Cite the chunk_id and a short snippet for every BOM line and labor line, OR set assumption to true.
 - Never invent a part number or a price.
 - Do not compute totals. Output line-level costs only.
