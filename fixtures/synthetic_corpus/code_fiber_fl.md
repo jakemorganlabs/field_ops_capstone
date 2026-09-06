@@ -17,8 +17,3 @@ Code requirements covered: vacuum rated, radiation hardened. FL code reference.
 - Minimum bend radius is 20 times the cable diameter under load.
 - Hermetic feedthroughs must be leak tested to 1e-8 std cc/sec helium.
 - Transceiver optical power budget must retain 3 dB margin after radiation aging.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

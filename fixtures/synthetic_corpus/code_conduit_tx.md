@@ -17,8 +17,3 @@ Code requirements covered: NEC Article 358, grounding required. TX code referenc
 - Maximum of four quarter bends, 360 degrees total, between pull points.
 - EMT must not be installed where subject to severe physical damage or in direct contact with earth.
 - Device boxes must be sized for conductor fill per NEC 314.16.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

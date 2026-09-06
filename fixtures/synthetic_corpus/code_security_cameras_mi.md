@@ -17,8 +17,3 @@ Code requirements covered: NEC Article 725, cybersecurity requirements. MI code 
 - The NVR must retain 30 days of recording at the configured frame rate.
 - Exterior cameras require a listed junction box and a drip loop at the cable entry.
 - Camera placement must comply with state privacy law; no coverage of restrooms or changing areas.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

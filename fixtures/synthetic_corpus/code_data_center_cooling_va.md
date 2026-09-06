@@ -17,8 +17,3 @@ Code requirements covered: ASHRAE thermal guidelines, hot aisle containment. VA 
 - In-row air conditioner condensate must drain to an approved receptor with an overflow alarm.
 - Blanking panels are required in all open rack units to prevent recirculation.
 - Chilled water connections need isolation valves and leak detection at each unit.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

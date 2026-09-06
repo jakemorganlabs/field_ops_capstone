@@ -17,8 +17,3 @@ Code requirements covered: TIA-568 standards, plenum rated. PA code reference.
 - Maximum cable bundle size is 24 cables to limit alien crosstalk.
 - Patch panels and equipment racks must be bonded to the telecommunications grounding busbar.
 - Labels are required on both ends of every cable and on every patch panel port per TIA-606.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

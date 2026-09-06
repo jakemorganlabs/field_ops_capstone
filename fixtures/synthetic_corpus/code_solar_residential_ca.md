@@ -17,8 +17,3 @@ Code requirements covered: NEC Article 690, utility interconnection. CA code ref
 - PV wire must be listed for wet locations and sunlight exposure and secured every 4.5 feet.
 - A 3 foot setback from the ridge and pathways to the ridge are required by the California Fire Code.
 - The string inverter must be listed to UL 1741 SB for the CA grid support functions.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

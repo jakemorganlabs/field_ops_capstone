@@ -17,8 +17,3 @@ Code requirements covered: NEC Article 625, ADA accessible. CO code reference.
 - Chargers mounted in a parking garage must be protected by a bollard mount or wheel stop against vehicle impact.
 - Ventilation is not required for chargers listed for indoor use without ventilation.
 - Load management or a load calculation per NEC 220 is required when six or more stations share a service.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

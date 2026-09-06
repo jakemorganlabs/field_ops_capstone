@@ -17,8 +17,3 @@ Code requirements covered: NEC Article 645, runtime requirement. NC code referen
 - A disconnect switch is required on both the UPS input and output, lockable in the open position.
 - 12 V VRLA batteries must be replaced as a full string; mixing ages is not permitted.
 - The maintenance bypass must allow UPS service without dropping the critical load.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

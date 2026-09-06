@@ -17,8 +17,3 @@ Code requirements covered: NEC Article 700, fuel gas code. AZ code reference.
 - A 48 kW generator requires a minimum 5 foot separation from openings into the building for exhaust.
 - The transfer switch must prevent inadvertent interconnection of the utility and generator sources.
 - In AZ the generator enclosure must be rated for a 115 degree F ambient derating.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

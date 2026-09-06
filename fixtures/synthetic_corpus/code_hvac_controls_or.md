@@ -17,8 +17,3 @@ Code requirements covered: ASHRAE 90.1, BACnet protocol. OR code reference.
 - The MS/TP trunk is limited to 32 devices per segment and 4000 feet of cable.
 - Optimum start and supply air temperature reset are required control sequences.
 - Point-to-point checkout of every sensor and actuator must be documented at commissioning.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

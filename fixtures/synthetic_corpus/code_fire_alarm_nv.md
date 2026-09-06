@@ -17,8 +17,3 @@ Code requirements covered: NFPA 72, ADA visible notification. NV code reference.
 - Fire alarm cable must be FPLR or better and installed separate from power circuits per NEC Article 760.
 - The control panel must have 24 hours of standby battery plus 5 minutes of alarm.
 - A 100 percent acceptance test with a record of completion is required before the system is placed in service.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

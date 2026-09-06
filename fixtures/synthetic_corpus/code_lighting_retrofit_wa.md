@@ -17,8 +17,3 @@ Code requirements covered: Title 24 compliance, recycling old lamps. WA code ref
 - Replacement LED troffers must be listed and installed with the manufacturer's dimming driver.
 - Lighting power density after retrofit must not exceed 0.65 W per square foot for office space.
 - Existing ballasts must be removed and PCB-containing ballasts recycled separately.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.

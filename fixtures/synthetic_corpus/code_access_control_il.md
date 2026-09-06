@@ -17,8 +17,3 @@ Code requirements covered: NFPA 101 egress, ADA compliance. IL code reference.
 - The access control panel must be on standby power for at least 4 hours.
 - Delayed egress locks, where used, must release within 15 seconds of a 3 second push.
 - All access events must be logged with a timestamp and retained for 90 days.
-
-## Labor Guidance
-
-- Work must be performed by a licensed contractor with a permit and final inspection.
-- Inspection and documentation time should be estimated at 5 percent of installation labor.
