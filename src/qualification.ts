@@ -18,6 +18,19 @@ export interface QualificationRules {
   reject_threshold: number;
   clarify_threshold: number;
   field_weights?: Record<string, number>;
+  /**
+   * Words that make a scope unsizable ("some", "several"). A scope that uses
+   * one routes to clarify even when every required field is present, because
+   * the estimator cannot build quantities from an indefinite count.
+   */
+  vague_scope_terms?: string[];
+  /**
+   * Regex sources (case-insensitive) that mark a constraint as a code or
+   * standard reference. A code-referenced constraint with no region routes to
+   * clarify: code requirements are jurisdiction-specific and the
+   * code_references retrieval query is built from the region.
+   */
+  code_constraint_patterns?: string[];
 }
 
 export interface RouteResult {
@@ -90,14 +103,48 @@ export function qualify(spec: ProjectSpec, rules: QualificationRules): RouteResu
     reasons.push(`Missing fields: ${missingFields.join(", ")}`);
   }
 
+  // Borderline intakes: complete on paper, not estimable as written.
+  let forceClarify = false;
+  const vagueTerm = findVagueScopeTerm(spec.scope, rules.vague_scope_terms);
+  if (vagueTerm !== null) {
+    forceClarify = true;
+    missingFields.push("scope_quantity");
+    reasons.push(`Scope uses an indefinite quantity ("${vagueTerm}"); a count is required to estimate`);
+  }
+  const codeConstraint = findCodeConstraint(spec.constraints, rules.code_constraint_patterns);
+  if (codeConstraint !== null && !isPresent(spec.region)) {
+    forceClarify = true;
+    missingFields.push("region");
+    reasons.push(`Constraint "${codeConstraint}" references a code; a region is required to apply it`);
+  }
+
   let action: RouteResult["action"];
   if (score < rules.reject_threshold) {
     action = "reject";
-  } else if (score < rules.clarify_threshold) {
+  } else if (score < rules.clarify_threshold || forceClarify) {
     action = "clarify";
   } else {
     action = "proceed";
   }
 
   return { action, score, reasons, missing_fields: missingFields };
+}
+
+function findVagueScopeTerm(scope: string | undefined, terms: string[] | undefined): string | null {
+  if (!scope || !terms || terms.length === 0) return null;
+  for (const term of terms) {
+    const pattern = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+    if (pattern.test(scope)) return term;
+  }
+  return null;
+}
+
+function findCodeConstraint(constraints: string[] | undefined, patterns: string[] | undefined): string | null {
+  if (!Array.isArray(constraints) || !patterns || patterns.length === 0) return null;
+  for (const constraint of constraints) {
+    for (const source of patterns) {
+      if (new RegExp(source, "i").test(constraint)) return constraint;
+    }
+  }
+  return null;
 }
