@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ajv, normalizeJudgePayload } from "../src/llm.js";
+import { ajv, normalizeModelPayload } from "../src/llm.js";
 
 const schema = {
   type: "object",
@@ -17,12 +17,12 @@ const schema = {
 const validate = ajv.compile({ type: "object", required: ["scores"], properties: { scores: schema } });
 
 function scores(parsed: unknown): Record<string, unknown> {
-  const out = normalizeJudgePayload(parsed, "scores", schema) as Record<string, unknown>;
+  const out = normalizeModelPayload(parsed, "scores", schema) as Record<string, unknown>;
   expect(validate(out), JSON.stringify(validate.errors)).toBe(true);
   return out.scores as Record<string, unknown>;
 }
 
-describe("normalizeJudgePayload (raw Gemma outputs captured 2026-09-06)", () => {
+describe("normalizeModelPayload (raw Gemma outputs captured 2026-09-06)", () => {
   it("strips the stray token glued to the first key and pulls a stray excerpt inside", () => {
     const raw = JSON.parse(
       '{"scores": {")}scope_completeness": 5, "hallucination": 2, "assumptions_surfaced": 1, "pricing_narrated": 5, "concise_without_missing_required_content": 5}, "excerpt": "labor_total: 3160.00"}'
@@ -47,7 +47,7 @@ describe("normalizeJudgePayload (raw Gemma outputs captured 2026-09-06)", () => 
     );
     // The first key/value pair was mangled beyond repair ("scope_completeness" became a value), so the
     // required field is absent and this shape must still fail validation rather than be invented.
-    const out = normalizeJudgePayload(raw, "scores", schema) as Record<string, unknown>;
+    const out = normalizeModelPayload(raw, "scores", schema) as Record<string, unknown>;
     expect(validate(out)).toBe(false);
   });
 
@@ -56,12 +56,33 @@ describe("normalizeJudgePayload (raw Gemma outputs captured 2026-09-06)", () => 
     const s = scores(raw);
     expect(s.scope_completeness).toBe(5);
     const clean = { scores: { scope_completeness: 5, hallucination: 2, assumptions_surfaced: 1, pricing_narrated: 4, concise_without_missing_required_content: 5, excerpt: "ok" } };
-    expect(normalizeJudgePayload(clean, "scores", schema)).toEqual(clean);
+    expect(normalizeModelPayload(clean, "scores", schema)).toEqual(clean);
   });
 
   it("never invents a missing score", () => {
     const raw = { scores: { scope_completeness: 5, hallucination: 2 } };
-    const out = normalizeJudgePayload(raw, "scores", schema) as Record<string, unknown>;
+    const out = normalizeModelPayload(raw, "scores", schema) as Record<string, unknown>;
     expect(validate(out)).toBe(false);
+  });
+});
+
+describe("normalizeModelPayload on the generation path", () => {
+  const prose = { type: "object", additionalProperties: false, required: ["summary"], properties: { summary: { type: "string" }, terms: { type: "string" } } };
+  const validateProse = ajv.compile({ type: "object", required: ["prose"], properties: { prose } });
+
+  it("repairs a slash-prefixed wrapper key", () => {
+    const out = normalizeModelPayload({ "/prose": { summary: "Install the drops.", terms: "Net 30." } }, "prose", prose) as Record<string, unknown>;
+    expect(validateProse(out)).toBe(true);
+    expect((out.prose as Record<string, unknown>).summary).toBe("Install the drops.");
+  });
+
+  it("leaves an empty object invalid", () => {
+    expect(validateProse(normalizeModelPayload({}, "prose", prose))).toBe(false);
+  });
+
+  it("does not touch a oneOf response schema with no top-level required fields", () => {
+    const response = { type: "object", oneOf: [{ required: ["bom"] }, { required: ["evidence_request"] }] };
+    const raw = { response: { bom: { run_id: "r", lines: [] } } };
+    expect(normalizeModelPayload(raw, "response", response)).toEqual(raw);
   });
 });

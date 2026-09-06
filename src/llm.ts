@@ -27,7 +27,8 @@ export class SchemaFailure extends Error {
 }
 
 /**
- * Repair the shapes the Gemma judge actually returns before validation.
+ * Repair the shapes the models actually return before validation. Applied on
+ * both the judge path and the generation path; the schema still decides.
  * Observed on DeepInfra with response_format json_object: a stray ")}" token
  * glued to the first key inside the wrapper ({"scores": {")}scope_completeness": 5}),
  * the wrapper key itself replaced by a junk key with the real name as its value
@@ -38,7 +39,7 @@ export class SchemaFailure extends Error {
  * only: keys are cleaned, the object holding the required fields is located
  * wherever it sits, numeric strings become numbers. No score is invented.
  */
-export function normalizeJudgePayload(parsed: unknown, wrapperKey: string, schema: object): unknown {
+export function normalizeModelPayload(parsed: unknown, wrapperKey: string, schema: object): unknown {
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return parsed;
   const required = requiredFields(schema);
   const numericFields = numberFields(schema);
@@ -183,7 +184,7 @@ export async function judgeJson<T>(opts: {
 
     let parsed: unknown;
     try {
-      parsed = normalizeJudgePayload(JSON.parse(raw), opts.wrapperKey, opts.schema);
+      parsed = normalizeModelPayload(JSON.parse(raw), opts.wrapperKey, opts.schema);
     } catch {
       continue;
     }
@@ -335,7 +336,9 @@ export async function generateJson<T>(opts: {
 
     let parsed: unknown;
     try {
-      parsed = JSON.parse(raw);
+      // DeepSeek occasionally prefixes the wrapper key ({"/prose": ...}) or
+      // returns {}. Key cleaning repairs the first; the second still fails.
+      parsed = normalizeModelPayload(JSON.parse(raw), opts.wrapperKey, opts.schema);
     } catch {
       continue;
     }
