@@ -17,6 +17,7 @@ describe("review loop", { tags: ["db"] }, () => {
   const pool = new pg.Pool({ connectionString: databaseUrl });
 
   afterAll(async () => {
+    await pool.query("DELETE FROM document WHERE external_id = 'review-loop-test-doc'");
     await pool.end();
   });
 
@@ -29,7 +30,32 @@ describe("review loop", { tags: ["db"] }, () => {
     }
   });
 
-  async function createRunWithState(bom: BillOfMaterials, proposal: ProposalDocument): Promise<string> {
+  const CHUNK_ID = "00000000-0000-0000-0000-000000000000";
+
+  // The loop-cap test needs a citation that verifies, otherwise the grounding
+  // gate recasts the line to an assumption, the BOM has no evidence-backed
+  // line, and the refusal gate escalates in round one.
+  async function seedChunk(): Promise<void> {
+    const client = await pool.connect();
+    try {
+      await client.query("DELETE FROM document WHERE external_id = 'review-loop-test-doc'");
+      const doc = await client.query(
+        `INSERT INTO document (external_id, source, doc_type, object_key, content_hash)
+         VALUES ('review-loop-test-doc', 'review-loop-test', 'eval_document', 'review-loop-test/doc', 'review-loop-hash')
+         RETURNING id`
+      );
+      await client.query(
+        `INSERT INTO chunk (id, document_id, content_hash, chunk_index, embed_model, text, doc_type, source)
+         VALUES ($1, $2, 'review-loop-hash', 0, 'test-model', 'Cat6A keystone jack: $8.50 each', 'eval_document', 'review-loop-test')`,
+        [CHUNK_ID, doc.rows[0].id]
+      );
+    } finally {
+      client.release();
+    }
+  }
+
+  async function createRunWithState(bom: BillOfMaterials, proposal: ProposalDocument, withEvidence = false): Promise<string> {
+    if (withEvidence) await seedChunk();
     const client = await pool.connect();
     try {
       const specResult = await client.query(
@@ -67,7 +93,7 @@ describe("review loop", { tags: ["db"] }, () => {
           JSON.stringify(bom),
           JSON.stringify(proposal),
           JSON.stringify({
-            similar_projects: [],
+            similar_projects: withEvidence ? [{ chunk_id: CHUNK_ID, score: 0.9 }] : [],
             manufacturer_specs: [],
             code_references: [],
           }),
@@ -123,10 +149,62 @@ describe("review loop", { tags: ["db"] }, () => {
     };
   }
 
+  it("escalates a bill of materials with no evidence-backed line even when the reviewer passes", async () => {
+    const bom: BillOfMaterials = {
+      run_id: "00000000-0000-0000-0000-000000000000",
+      lines: [{ item: "Walk-in freezer", quantity: "1", unit_cost: "0.00", assumption: true, note: "price not found in evidence" }],
+      labor: [{ role: "refrigeration technician", hours: "0", rate_key: "technician", assumption: true }],
+    };
+    const proposal: ProposalDocument = {
+      ...makeProposal(),
+      assumptions: ["Walk-in freezer: price not found in evidence", "refrigeration technician"],
+      total: "0.00",
+    };
+    const runId = await createRunWithState(bom, proposal);
+
+    let reviewerCalls = 0;
+    let estimatorCalls = 0;
+    let writerCalls = 0;
+    const deps = makeDeps({
+      reviewer: async () => {
+        reviewerCalls += 1;
+        return { run_id: runId, round: reviewerCalls, decision: "pass", issues: [] };
+      },
+      estimator: async () => {
+        estimatorCalls += 1;
+        throw new Error("estimator must not run");
+      },
+      writer: async () => {
+        writerCalls += 1;
+        return proposal;
+      },
+    });
+
+    const state = await reviewAndRegenerate(runId, deps);
+
+    expect(state.status).toBe("needs_review");
+    expect(state.iterations).toBe(0);
+    expect(state.open_issues[0].description).toMatch(/No line in the bill of materials is backed by retrieved evidence/);
+    expect(reviewerCalls).toBe(1);
+    expect(estimatorCalls).toBe(0);
+    expect(writerCalls).toBe(0);
+
+    const client = await pool.connect();
+    try {
+      const run = await client.query("SELECT status, critique FROM run WHERE id = $1", [runId]);
+      expect(run.rows[0].status).toBe("needs_review");
+      expect(run.rows[0].critique.issues[0].severity).toBe("error");
+      const critiques = await client.query("SELECT verdict FROM critique WHERE run_id = $1", [runId]);
+      expect(critiques.rows).toEqual([{ verdict: "pass" }]);
+    } finally {
+      client.release();
+    }
+  });
+
   it("does not reach a third iteration", async () => {
     const bom = makeBom();
     const proposal = makeProposal();
-    const runId = await createRunWithState(bom, proposal);
+    const runId = await createRunWithState(bom, proposal, true);
 
     let reviewerCalls = 0;
     let estimatorCalls = 0;

@@ -419,6 +419,29 @@ async function regenerate(
   return { ...state, bom: gated.bom, proposal: gated.proposal };
 }
 
+/**
+ * True when nothing in the bill of materials is backed by retrieved evidence:
+ * every material line and every labor line is an assumption, or there are no
+ * lines at all. Such a run must not complete as a priced proposal. It is
+ * escalated to needs_review regardless of the reviewer's verdict, so the
+ * refusal does not depend on a model noticing that the prices are placeholders.
+ */
+export function bomHasNoEvidence(bom: BillOfMaterials): boolean {
+  const lines = bom.lines ?? [];
+  const labor = bom.labor ?? [];
+  if (lines.length === 0 && labor.length === 0) return true;
+  return lines.every((l) => l.assumption === true) && labor.every((l) => l.assumption === true);
+}
+
+export const NO_EVIDENCE_ISSUE: Issue = {
+  type: "missing_item",
+  severity: "error",
+  target_agent: "estimator",
+  description:
+    "No line in the bill of materials is backed by retrieved evidence; every material and labor line is an assumption. Escalated for human review instead of a priced proposal.",
+  evidence_chunk_id: "00000000-0000-0000-0000-000000000000",
+};
+
 async function loadLoopCap(): Promise<number> {
   const path = join(dirname(fileURLToPath(import.meta.url)), "..", "config", "loop_cap.json");
   const text = await readFile(path, "utf-8");
@@ -476,6 +499,20 @@ export async function reviewAndRegenerate(runId: string, deps: Deps): Promise<Lo
 
     const reviewerIssues = critique.decision === "revise" ? critique.issues : [];
     const openIssues = [...gateIssues, ...reviewerIssues];
+
+    // Refusal gate: with no evidence-backed line, regeneration cannot help and a
+    // "pass" from the reviewer is advice about placeholder prices. Escalate now.
+    if (bomHasNoEvidence(state.bom)) {
+      const escalated = [NO_EVIDENCE_ISSUE, ...openIssues];
+      const client2 = await deps.pool.connect();
+      try {
+        await persistRunStatus(client2, runId, "needs_review", escalated);
+      } finally {
+        client2.release();
+      }
+      console.log(JSON.stringify({ event: "no_evidence_escalation", run_id: runId, iterations, reviewer_decision: critique.decision }));
+      return { iterations, open_issues: escalated, status: "needs_review" };
+    }
 
     if (openIssues.length === 0) {
       const client2 = await deps.pool.connect();
