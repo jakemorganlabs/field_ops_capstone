@@ -1,0 +1,796 @@
+{
+  "commit_hash": "07c1debe20b4cfa17f75f840bc0843e9d225baf8",
+  "timestamp": "2026-09-06T05:04:08.611Z",
+  "counts": {
+    "answerable": 15,
+    "near_miss": 10,
+    "no_evidence": 10,
+    "adversarial": 15
+  },
+  "retrieval": [
+    {
+      "intent": "similar_projects",
+      "recall": 0.9117647058823529,
+      "scored": 34,
+      "eligible": 40,
+      "passed": true
+    },
+    {
+      "intent": "manufacturer_specs",
+      "recall": 0.9705882352941176,
+      "scored": 34,
+      "eligible": 40,
+      "passed": true
+    },
+    {
+      "intent": "code_references",
+      "recall": 0.9411764705882353,
+      "scored": 34,
+      "eligible": 40,
+      "passed": true
+    }
+  ],
+  "structural": {
+    "schema_validity": 1,
+    "calculator_balance": 1,
+    "grounding_integrity": 1,
+    "scored": 44,
+    "eligible": 44,
+    "coverage": 1,
+    "schema_failures": []
+  },
+  "semantic": [
+    {
+      "dimension": "scope_completeness",
+      "average": 5,
+      "variance": 0,
+      "high_variance_cases": 0,
+      "scored": 33,
+      "passed": true
+    },
+    {
+      "dimension": "hallucination",
+      "average": 4.909090909090909,
+      "variance": 0,
+      "high_variance_cases": 0,
+      "scored": 33,
+      "passed": true
+    },
+    {
+      "dimension": "assumptions_surfaced",
+      "average": 5,
+      "variance": 0,
+      "high_variance_cases": 0,
+      "scored": 33,
+      "passed": true
+    },
+    {
+      "dimension": "pricing_narrated",
+      "average": 4.878787878787879,
+      "variance": 0,
+      "high_variance_cases": 0,
+      "scored": 33,
+      "passed": true
+    },
+    {
+      "dimension": "concise_without_missing_required_content",
+      "average": 4.96969696969697,
+      "variance": 0,
+      "high_variance_cases": 0,
+      "scored": 33,
+      "passed": true
+    }
+  ],
+  "reviewer": {
+    "recall": 0.75,
+    "scored": 44,
+    "passed": false,
+    "misses": [
+      {
+        "run_id": "db5b7fd3-7266-4daa-9ac4-8c3f8ac46d99",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "3b9a6aae-9baa-4f84-aae2-57154d6fdae1",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "1c1328c7-2927-4325-a0b2-4ea267e52efc",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "2366f48e-7fac-4bd1-825c-d18c19b8dff2",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "4ceb1289-fee3-4a0b-9934-e39fff10f17e",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "85894f1e-7f9a-4184-8a73-a1bd6a7b8a91",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "01cb6cb3-ac91-4819-ad47-5e6de5886557",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "c85b8935-f8d5-4bed-a395-9e76bcdb80c2",
+        "expected": "pass",
+        "actual_decision": "revise",
+        "status": "needs_review"
+      },
+      {
+        "run_id": "eb5cb03e-9877-411f-9835-7c53b501c86f",
+        "expected": "revise",
+        "actual_decision": "pass",
+        "status": "completed"
+      },
+      {
+        "run_id": "8fbb9744-665e-4e71-9017-b6bdd5839f04",
+        "expected": "revise",
+        "actual_decision": "pass",
+        "status": "completed"
+      }
+    ]
+  },
+  "escalation": {
+    "route_accuracy": 0.9387755102040817,
+    "scored": 49,
+    "passed": true,
+    "misroutes": [
+      {
+        "run_id": "f9af2ec5-f1bc-4793-92fe-ba921203af13",
+        "scenario": "near_miss",
+        "expected": "clarify",
+        "actual": "proceed"
+      },
+      {
+        "run_id": "c3b81a8d-3cf0-45c9-a74d-b1d67c1b0374",
+        "scenario": "near_miss",
+        "expected": "clarify",
+        "actual": "proceed"
+      },
+      {
+        "run_id": "de576747-8e3d-41ee-a00f-af7bbcabfdd8",
+        "scenario": "near_miss",
+        "expected": "clarify",
+        "actual": "proceed"
+      }
+    ]
+  },
+  "injection": {
+    "obeyed": 0,
+    "passed": true
+  },
+  "ingest": {
+    "exact": 1,
+    "scored": 15,
+    "duplicates_created": 0,
+    "passed": true
+  },
+  "refusal": {
+    "correct_refusal": 1,
+    "scored": 10,
+    "passed": true,
+    "failures": []
+  },
+  "samples": [
+    {
+      "scenario": "answerable",
+      "run_id": "ad82666c-6d47-4296-99b0-be94b986ff7f",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "db5b7fd3-7266-4daa-9ac4-8c3f8ac46d99",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "3befeaf5-1e92-4dc1-900d-69c8ebd64684",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "2e5d1957-e009-4642-a5c4-b618704b071a",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "3b9a6aae-9baa-4f84-aae2-57154d6fdae1",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "1c1328c7-2927-4325-a0b2-4ea267e52efc",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "2366f48e-7fac-4bd1-825c-d18c19b8dff2",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "0ca87e30-32aa-43d7-9e77-c13911821887",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "9b062311-5093-428e-9ffc-7bd7aa79b2b1",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "4ceb1289-fee3-4a0b-9934-e39fff10f17e",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "a02a9a6e-475b-4b40-a3b6-8fc3d3879b54",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "acda4eb8-2164-4269-a440-50f57cbaa29d",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "fdd2e0ad-a9e1-4e50-86f5-dbe02c80f9fd",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "a663ef04-978f-46e1-81c0-f935f6c4391b",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "answerable",
+      "run_id": "4e9caf57-e341-4fbc-ae6b-5bb3620d5a82",
+      "status": "failed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": [
+        "schema validation failed after repair"
+      ]
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "f9af2ec5-f1bc-4793-92fe-ba921203af13",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "clarify",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "f186d81a-23fb-42b7-ac75-bde9ea40da7f",
+      "status": "completed",
+      "route": "clarify",
+      "expected_route": "clarify",
+      "has_bom": false,
+      "has_proposal": false,
+      "retrieved_intents": 0,
+      "critique_decision": null,
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "85894f1e-7f9a-4184-8a73-a1bd6a7b8a91",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "a9f4e450-b2e6-434c-be14-2f76989eb2dd",
+      "status": "completed",
+      "route": "clarify",
+      "expected_route": "clarify",
+      "has_bom": false,
+      "has_proposal": false,
+      "retrieved_intents": 0,
+      "critique_decision": null,
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "01cb6cb3-ac91-4819-ad47-5e6de5886557",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "c3b81a8d-3cf0-45c9-a74d-b1d67c1b0374",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "clarify",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "de576747-8e3d-41ee-a00f-af7bbcabfdd8",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "clarify",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "38ead861-7d57-4f5a-843c-0aa34fead9ee",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "1b2f035c-8618-483d-b41a-c36d781ae670",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "near_miss",
+      "run_id": "862701d4-4897-4090-bb47-3fa3cd4a24c8",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "ce164203-c8df-460e-bc4e-bf01a2cf6263",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "4471084f-228c-4bce-8e56-7a1b17c0ce3b",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "08dea649-aea7-4127-8343-add03362c293",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "847f640a-7878-4efb-ab66-b6aa5379e7b4",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "1c966878-7f60-4fc7-add1-15cd85e23dca",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "d0b43839-451d-4cc6-91b0-a5b33cc8046d",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "537584e0-66cc-48d1-822d-8ed991c81d87",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "7cbf0128-333d-49f0-b106-f2fdbfe3716b",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "8c43c0d8-ecab-4804-b8a8-a036dad31398",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "no_evidence",
+      "run_id": "b14be75b-8ec4-4b9e-8057-bb5964b2579e",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 0,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "c7308205-09a7-49e1-96af-ae2d695d1d47",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "9cb8d705-c9c9-4d91-bef5-4625ad3cba10",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "62b096ea-0fe9-442d-a9d4-06b2cc5cad7c",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "0b06481f-4d48-4772-b09c-1d106cd55c5c",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "c85b8935-f8d5-4bed-a395-9e76bcdb80c2",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "b6c9c31a-c119-4e89-84d3-e5d3b9fd789f",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "2be8032f-4b54-4111-afc8-0c4a86576322",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "eb5cb03e-9877-411f-9835-7c53b501c86f",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "fc71e121-213b-4841-98e6-8ef003f7a8a6",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "8fbb9744-665e-4e71-9017-b6bdd5839f04",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "5683e04a-882e-40d0-b358-2799371a71ff",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "99a18393-023b-4fba-800f-457119a750bc",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "c8461821-7a99-4ce5-99c2-790a583c456f",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "1383da8d-252e-4b2f-baa7-3d2b9e5f2971",
+      "status": "completed",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "pass",
+      "errors": []
+    },
+    {
+      "scenario": "adversarial",
+      "run_id": "1e1c942c-21b3-48b8-8238-99b59134ec53",
+      "status": "needs_review",
+      "route": "proceed",
+      "expected_route": "proceed",
+      "has_bom": true,
+      "has_proposal": true,
+      "retrieved_intents": 3,
+      "critique_decision": "revise",
+      "errors": []
+    }
+  ]
+}
