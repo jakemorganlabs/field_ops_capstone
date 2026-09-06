@@ -42,18 +42,20 @@ const judgeSchema = {
 };
 
 function buildJudgePrompt(sample: EvalSample): string {
-  return `You are evaluating a construction proposal generated from a project spec and retrieved evidence.
+  return `You are evaluating a construction proposal generated from a project spec, a bill of materials (BOM), and retrieved evidence.
 
-Rate the proposal on these five dimensions, each from 1 to 5:
-- scope_completeness: does the proposal cover the stated scope?
-- hallucination: are there invented facts or unsupported claims?
-- assumptions_surfaced: are assumptions clearly listed?
-- pricing_narrated: are totals and line items described accurately?
-- concise_without_missing_required_content: is the prose concise without omitting required content?
+Rate the proposal on these five dimensions. Each is an integer from 1 to 5 and 5 is always the best score.
+- scope_completeness: 5 means every item of work in the spec's scope is covered by the proposal; 1 means most of the scope is missing.
+- hallucination: 5 means no invented facts and no claims unsupported by the spec, the BOM, or the evidence; 1 means several invented or unsupported claims. A proposal with nothing invented scores 5.
+- assumptions_surfaced: 5 means every BOM line marked assumption appears in the proposal's assumptions list; if the BOM has no assumption lines, an empty list is correct and scores 5. 1 means assumption lines are hidden from the list.
+- pricing_narrated: 5 means the line items and totals in the proposal match the BOM and the computed totals exactly; 1 means figures disagree or are missing.
+- concise_without_missing_required_content: 5 means the prose is brief and still states the scope, the totals, and the assumptions; 1 means it is padded or omits required content.
 
-Return a JSON object with wrapper key "scores". Include a quoted excerpt that supports your ratings.
+Return a JSON object with wrapper key "scores" whose value has exactly these keys: scope_completeness, hallucination, assumptions_surfaced, pricing_narrated, concise_without_missing_required_content, excerpt. The excerpt is a short quote from the proposal that supports your ratings.
 
 Project spec: ${JSON.stringify(sample.case.intake, null, 2)}
+
+BOM: ${JSON.stringify(sample.bom, null, 2)}
 
 Proposal: ${JSON.stringify(sample.proposal, null, 2)}`;
 }

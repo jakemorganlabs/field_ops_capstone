@@ -26,6 +26,86 @@ export class SchemaFailure extends Error {
   }
 }
 
+/**
+ * Repair the shapes the Gemma judge actually returns before validation.
+ * Observed on DeepInfra with response_format json_object: a stray ")}" token
+ * glued to the first key inside the wrapper ({"scores": {")}scope_completeness": 5}),
+ * the wrapper key itself replaced by a junk key with the real name as its value
+ * ({")} { ": "scores", "value": {...}}), the excerpt placed beside the wrapper
+ * instead of inside it, and scores written as strings. Each one failed the
+ * schema on all three attempts and left the semantic metrics unmeasured (37
+ * judge-schema failures on the 50-case eval). The rules here are structural
+ * only: keys are cleaned, the object holding the required fields is located
+ * wherever it sits, numeric strings become numbers. No score is invented.
+ */
+export function normalizeJudgePayload(parsed: unknown, wrapperKey: string, schema: object): unknown {
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return parsed;
+  const required = requiredFields(schema);
+  const numericFields = numberFields(schema);
+  const cleaned = cleanKeys(parsed) as Record<string, unknown>;
+
+  let inner: Record<string, unknown> | null = null;
+  const direct = cleaned[wrapperKey];
+  if (direct && typeof direct === "object" && !Array.isArray(direct) && hasAll(direct as Record<string, unknown>, required)) {
+    inner = direct as Record<string, unknown>;
+  } else {
+    inner = findObjectWith(cleaned, required);
+  }
+  if (!inner) return cleaned;
+
+  for (const field of numericFields) {
+    const v = inner[field];
+    if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) {
+      inner[field] = Number(v);
+    }
+  }
+  if (inner.excerpt === undefined) {
+    const stray = cleaned.excerpt ?? cleaned.supporting_excerpt ?? inner.supporting_excerpt;
+    if (typeof stray === "string") inner.excerpt = stray;
+  }
+  return { ...cleaned, [wrapperKey]: inner };
+}
+
+function cleanKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(cleanKeys);
+  if (!value || typeof value !== "object") return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, v] of Object.entries(value as Record<string, unknown>)) {
+    const k = key.replace(/^[^A-Za-z_]+/, "").replace(/[^A-Za-z0-9_]+$/, "").trim();
+    out[k === "" ? key.trim() : k] = cleanKeys(v);
+  }
+  return out;
+}
+
+function hasAll(obj: Record<string, unknown>, fields: string[]): boolean {
+  return fields.every((f) => obj[f] !== undefined);
+}
+
+function findObjectWith(value: unknown, fields: string[]): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") return null;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findObjectWith(item, fields);
+      if (found) return found;
+    }
+    return null;
+  }
+  const obj = value as Record<string, unknown>;
+  if (fields.length > 0 && hasAll(obj, fields)) return obj;
+  for (const v of Object.values(obj)) {
+    const found = findObjectWith(v, fields);
+    if (found) return found;
+  }
+  return null;
+}
+
+function numberFields(schema: object): string[] {
+  const props = (schema as { properties?: Record<string, { type?: string }> }).properties ?? {};
+  return Object.entries(props)
+    .filter(([, def]) => def && (def.type === "number" || def.type === "integer"))
+    .map(([name]) => name);
+}
+
 export async function judgeJson<T>(opts: {
   system: string;
   user: string;
@@ -103,7 +183,7 @@ export async function judgeJson<T>(opts: {
 
     let parsed: unknown;
     try {
-      parsed = JSON.parse(raw);
+      parsed = normalizeJudgePayload(JSON.parse(raw), opts.wrapperKey, opts.schema);
     } catch {
       continue;
     }
