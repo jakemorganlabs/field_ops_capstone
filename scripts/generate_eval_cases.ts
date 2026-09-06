@@ -1109,7 +1109,7 @@ async function writeCaseFile(path: string, cases: EvalCase[]): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const base = "/Users/jakemorgan/Projects/Fieldops Intelligence/fixtures/eval_cases";
+  const base = "fixtures/eval_cases";
   await writeCaseFile(`${base}/answerable.json`, answerable);
   await writeCaseFile(`${base}/near_miss.json`, nearMiss);
   await writeCaseFile(`${base}/no_evidence.json`, noEvidence);
