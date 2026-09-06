@@ -66,10 +66,10 @@
         "proposal_ev_charging_co.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_ev_charging_co.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_ev_charging_co.md"
       ]
     },
     "expected_assumptions": [],
@@ -104,10 +104,10 @@
         "proposal_panel_upgrade_ny.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_panel_upgrade_ny.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_panel_upgrade_ny.md"
       ]
     },
     "expected_assumptions": [],
@@ -139,10 +139,10 @@
         "proposal_lighting_retrofit_wa.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_lighting_retrofit_wa.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_lighting_retrofit_wa.md"
       ]
     },
     "expected_assumptions": [],
@@ -176,10 +176,10 @@
         "proposal_generator_az.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_generator_az.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_generator_az.md"
       ]
     },
     "expected_assumptions": [
@@ -216,10 +216,10 @@
         "proposal_fire_alarm_nv.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_fire_alarm_nv.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_fire_alarm_nv.md"
       ]
     },
     "expected_assumptions": [],
@@ -254,10 +254,10 @@
         "proposal_hvac_controls_or.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_hvac_controls_or.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_hvac_controls_or.md"
       ]
     },
     "expected_assumptions": [],
@@ -291,10 +291,10 @@
         "proposal_security_cameras_mi.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_security_cameras_mi.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_security_cameras_mi.md"
       ]
     },
     "expected_assumptions": [
@@ -331,10 +331,10 @@
         "proposal_solar_residential_ca.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_solar_residential_ca.md"
       ],
       "code_references": [
-        "spec_nec_2023_ca.md"
+        "code_solar_residential_ca.md"
       ]
     },
     "expected_assumptions": [
@@ -370,10 +370,10 @@
         "proposal_ups_backup_nc.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_ups_backup_nc.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_ups_backup_nc.md"
       ]
     },
     "expected_assumptions": [

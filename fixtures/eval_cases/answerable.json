@@ -68,10 +68,10 @@
         "proposal_fiber_fl.md"
       ],
       "manufacturer_specs": [
-        "spec_sheet_pump.md"
+        "spec_fiber_fl.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_fiber_fl.md"
       ]
     },
     "expected_assumptions": [],
@@ -107,10 +107,10 @@
         "proposal_conduit_tx.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_conduit_tx.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_conduit_tx.md"
       ]
     },
     "expected_assumptions": [],
@@ -146,10 +146,10 @@
         "proposal_panel_upgrade_ny.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_panel_upgrade_ny.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_panel_upgrade_ny.md"
       ]
     },
     "expected_assumptions": [],
@@ -185,10 +185,10 @@
         "proposal_ev_charging_co.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_ev_charging_co.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_ev_charging_co.md"
       ]
     },
     "expected_assumptions": [],
@@ -223,10 +223,10 @@
         "proposal_lighting_retrofit_wa.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_lighting_retrofit_wa.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_lighting_retrofit_wa.md"
       ]
     },
     "expected_assumptions": [],
@@ -262,10 +262,10 @@
         "proposal_generator_az.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_generator_az.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_generator_az.md"
       ]
     },
     "expected_assumptions": [],
@@ -301,10 +301,10 @@
         "proposal_fire_alarm_nv.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_fire_alarm_nv.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_fire_alarm_nv.md"
       ]
     },
     "expected_assumptions": [],
@@ -340,10 +340,10 @@
         "proposal_hvac_controls_or.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_hvac_controls_or.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_hvac_controls_or.md"
       ]
     },
     "expected_assumptions": [],
@@ -380,10 +380,10 @@
         "proposal_security_cameras_mi.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_security_cameras_mi.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_security_cameras_mi.md"
       ]
     },
     "expected_assumptions": [],
@@ -420,10 +420,10 @@
         "proposal_solar_residential_ca.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_solar_residential_ca.md"
       ],
       "code_references": [
-        "spec_nec_2023_ca.md"
+        "code_solar_residential_ca.md"
       ]
     },
     "expected_assumptions": [],
@@ -459,10 +459,10 @@
         "proposal_data_center_cooling_va.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_data_center_cooling_va.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_data_center_cooling_va.md"
       ]
     },
     "expected_assumptions": [],
@@ -498,10 +498,10 @@
         "proposal_ups_backup_nc.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_ups_backup_nc.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_ups_backup_nc.md"
       ]
     },
     "expected_assumptions": [],
@@ -537,10 +537,10 @@
         "proposal_access_control_il.md"
       ],
       "manufacturer_specs": [
-        "code_reference.md"
+        "spec_access_control_il.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_access_control_il.md"
       ]
     },
     "expected_assumptions": [],
@@ -576,11 +576,10 @@
         "proposal_structured_cabling_pa.md"
       ],
       "manufacturer_specs": [
-        "cat6a_spec.md",
-        "cat6a_pricing.md"
+        "spec_structured_cabling_pa.md"
       ],
       "code_references": [
-        "code_reference.md"
+        "code_structured_cabling_pa.md"
       ]
     },
     "expected_assumptions": [],

@@ -4,6 +4,8 @@
 
 Synthetic proposal for an IP security camera system in Detroit, MI.
 
+Project type: install IP cameras with a network video recorder (NVR) and the associated network cabling for a commercial building.
+
 ## Scope
 
 Install 24 IP cameras, network video recorder, and associated network cabling.

@@ -44,6 +44,8 @@ Retrieval is verified against the database. For sampled cases, the chunks return
 
 The metric scorer is corrected. After the pipeline ends, the harness reads each finished case back from the database. It scores each metric only against the cases that can show that metric. A clarify case has no bill of materials and no proposal. So it does not count against the structural scores. Each scorer reports the number of cases it scored. A count of zero fails the gate. The judge schema accepts extra keys, so the semantic scorer records the judge scores. The injection check reads the computed total of an adversarial run, not the proposal text. The command `npm run eval` writes the current figures to `evals/results.json`.
 
+`npm run eval:retrieval` is a retrieval-only probe. It seeds the eval corpus, then for every case the full eval would score for recall it builds the same fixed intent queries the pipeline builds and scores recall the same way `evals/metrics/retrieval.ts` does. No model call is made, so it costs embeddings only and runs in under a minute. It is a close proxy for the retrieval metric, not the metric: the full eval derives its queries from the extracted spec rather than the intake. Use it to check a corpus change before spending a full run.
+
 The eval run scored five metrics at 1.0: schema validity, calculator balance, grounding integrity, correct refusal, and idempotent ingest. Retrieval passed for `similar_projects`. Three metrics need more work. The Roadmap section gives the details.
 
 The badge at the top of this page is the `Evals (smoke)` workflow. On each push it seeds the eval corpus and checks retrieval recall for one answerable case. It does not run the agent chain. So it measures none of the structural, semantic, reviewer, escalation, injection, ingest, or refusal metrics, and its results file lists those sections as unmeasured. A green badge means retrieval on one case cleared the floor and nothing more. The full figures come only from `npm run eval`.
@@ -69,7 +71,7 @@ Two captured runs from the deployed system show the pipeline at work:
 4. Run `npm ci`.
 5. Run `npm run migrate`.
 6. Run `npm test`.
-7. Run `npm run eval` to make `evals/results.json`.
+7. Run `npm run eval:retrieval` for a fast retrieval-only check, or `npm run eval` for the full run that writes `evals/results.json`.
 8. Run `npm run eval:gate` to check the thresholds.
 
 ## Limitations
@@ -83,7 +85,7 @@ Three metrics need more work. The eval run measured each one.
 
 1. Reviewer calibration. The reviewer recall was 0.37. The reviewer marks revise on answerable cases that the fixtures expect it to pass. It then sends these cases to needs_review. A precedence rule in the reviewer prompt must make the reviewer mark revise only for a defect against the spec or the evidence. The same rule corrects the reviewer change in Limitation 1.
 2. Qualifier calibration. The route accuracy was 0.88. Five near-miss cases continued. The fixtures expect the qualifier to return these cases for more data. The clarify threshold and the field rules need adjustment for the borderline cases.
-3. Retrieval on two intents. The recall was 0.90 for `similar_projects`. The recall was 0.48 for `manufacturer_specs`. The recall was 0.52 for `code_references`. Each case has one dedicated proposal document, so `similar_projects` is strong. The corpus has only a few shared specification documents and code documents. So the other two intents use generic references. More documents for each topic must raise the recall.
+3. Retrieval on two intents. The last full eval run measured 0.90 for `similar_projects`, 0.48 for `manufacturer_specs`, and 0.52 for `code_references`. The cause was the corpus. Each case had one dedicated proposal document, but 14 of the 15 topics shared one generic code reference and had no specification document at all, so the gold source for those two intents was a document about Cat6A cabling in California. The corpus now carries a manufacturer specification and a code reference for every topic (58 documents, up from 30), and the fixtures point at them. The retrieval probe (`npm run eval:retrieval`, described above) measures 0.91, 0.97, and 0.94 on that corpus. The remaining misses are the adversarial cases, where the injected text pollutes the query, and two near-miss cases whose single-constraint queries fall under the similarity floor. The full eval has not been re-run since this change, so `evals/results.json` still carries the old figures until it is.
 
 ## Deviation Notes
 
