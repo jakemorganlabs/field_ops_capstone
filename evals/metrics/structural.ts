@@ -3,7 +3,7 @@ import addFormats from "ajv-formats";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { Decimal } from "decimal.js";
+import { materialSubtotal, laborTotal, proposalTotal } from "../../src/calculator.js";
 import type { EvalSample } from "./types.js";
 import { producedArtifacts, coverage } from "./eligibility.js";
 
@@ -113,6 +113,14 @@ async function loadRateConfig(): Promise<{ rateMap: Record<string, string>; taxR
   return { rateMap, taxRate };
 }
 
+/**
+ * calculator_balance asks one question: do the persisted totals equal what the
+ * shared calculator computes from the persisted BOM? It therefore calls the
+ * same functions the pipeline calls. An earlier private copy of laborTotal
+ * threw on an assumption labor line with no configured rate, so every run that
+ * recast such a line failed balance (0.91 on the 2026-09-06 run) while the
+ * pipeline's own arithmetic was correct.
+ */
 async function checkBalance(bom: NonNullable<EvalSample["bom"]>, totals: NonNullable<EvalSample["totals"]>): Promise<boolean> {
   try {
     const { rateMap, taxRate } = await loadRateConfig();
@@ -123,34 +131,6 @@ async function checkBalance(bom: NonNullable<EvalSample["bom"]>, totals: NonNull
   } catch {
     return false;
   }
-}
-
-function materialSubtotal(lines: { item: string; quantity: string | number; unit_cost: string | number }[]): string {
-  const total = lines.reduce((sum, line) => {
-    const q = new Decimal(line.quantity);
-    const c = new Decimal(line.unit_cost);
-    return sum.plus(q.mul(c).toDecimalPlaces(2));
-  }, new Decimal("0"));
-  return total.toDecimalPlaces(2).toFixed(2);
-}
-
-function laborTotal(labor: { role: string; hours: string | number; rate_key: string }[], rateMap: Record<string, string>): string {
-  const total = labor.reduce((sum, line) => {
-    const rate = rateMap[line.rate_key];
-    if (rate === undefined) {
-      throw new Error(`Missing rate for ${line.rate_key}`);
-    }
-    const h = new Decimal(line.hours);
-    const r = new Decimal(rate);
-    return sum.plus(h.mul(r).toDecimalPlaces(2));
-  }, new Decimal("0"));
-  return total.toDecimalPlaces(2).toFixed(2);
-}
-
-function proposalTotal(materials: string, labor: string, taxRate: string): string {
-  const base = new Decimal(materials).plus(new Decimal(labor));
-  const tax = base.mul(new Decimal(taxRate)).toDecimalPlaces(2);
-  return base.plus(tax).toDecimalPlaces(2).toFixed(2);
 }
 
 function checkGrounding(bom: NonNullable<EvalSample["bom"]>): boolean {
